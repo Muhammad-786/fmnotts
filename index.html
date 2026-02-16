@@ -1402,6 +1402,11 @@
             const loadingMessage = document.getElementById('loading-message');
             const staticSlides = Array.from(document.querySelectorAll('.static-slide'));
 
+            // --- STATE VARIABLES ---
+            let currentAnimationFrame = null;
+            let dynamicSlides = [];
+            let currentSlideIndex = 0;
+
 
 
             // --- UTILITY FUNCTIONS ---
