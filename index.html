@@ -1140,721 +1140,543 @@
             </div>
 
         </div>
-    </div>
 
 
-    <div class="form-group">
-        <label>Jummah Jamaat Time (HH:MM - 24h format)</label>
-        <div style="display:flex; gap:10px;">
-            <input type="number" id="input-jamaat-h" class="form-control" min="0" max="23" placeholder="HH">
-            <input type="number" id="input-jamaat-m" class="form-control" min="0" max="59" placeholder="MM">
-        </div>
-    </div>
-    <div class="form-group">
-        <label>Countdown Start Time (Friday HH:MM)</label>
-        <div style="display:flex; gap:10px;">
-            <input type="number" id="input-start-h" class="form-control" min="0" max="23" placeholder="HH">
-            <input type="number" id="input-start-m" class="form-control" min="0" max="59" placeholder="MM">
-        </div>
-    </div>
-    </div>
 
-    <div id="tab-slides" class="tab-content">
-        <!-- File Upload Section -->
-        <div class="form-group"
-            style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; border:1px dashed var(--gold-primary); margin-bottom: 20px;">
-            <label style="color:var(--gold-primary);"><i class="fas fa-cloud-upload-alt"></i> Upload New
-                Slide (Gallery/File)</label>
-            <div style="display:flex; gap:10px;">
-                <input type="file" id="input-slide-file" class="form-control" accept="image/*">
-                <button class="btn btn-primary" id="btn-upload" onclick="uploadSlideFile()">Upload</button>
-            </div>
-            <small style="color: #aaa; margin-top:5px; display:block;">Supported: JPG, PNG, GIF</small>
-        </div>
 
-        <div style="text-align:center; margin:15px 0; color:var(--text-muted); position:relative; margin-bottom: 20px;">
-            <span style="background: rgb(20,20,20); padding:0 10px; position:relative; z-index:1; font-size: 0.9rem;">OR
-                ADD VIA LINK</span>
-            <div
-                style="position:absolute; top:50%; left:0; width:100%; height:1px; background:rgba(255,255,255,0.1); z-index:0;">
-            </div>
-        </div>
 
-        <div class="form-group">
-            <label>Add Slide via URL</label>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="input-slide-url" class="form-control"
-                    placeholder="https://example.com/image.jpg">
-                <button class="btn btn-primary" onclick="addNewSlide()">Add</button>
-            </div>
-        </div>
-        <label>Active Slides</label>
-        <ul id="admin-slide-list" class="slide-list">
-        </ul>
-    </div>
+        <script>
+            // --- 1. FIREBASE CONFIGURATION (PRE-FILLED WITH YOUR KEYS) ---
+            const firebaseConfig = {
+                apiKey: "AIzaSyCirBPRHp02zVZFUp5F1t42xm0jEmZeiEc",
+                authDomain: "mosquedisplay-eab43.firebaseapp.com",
+                projectId: "mosquedisplay-eab43",
+                storageBucket: "mosquedisplay-eab43.firebasestorage.app",
+                messagingSenderId: "542105594974",
+                appId: "1:542105594974:web:63b591fa0d3cd697eb98cf"
+            };
+            // ----------------------------------------------------
 
-    <div id="tab-appearance" class="tab-content">
-        <label>Color Scheme</label>
-        <div class="theme-grid">
-            <div class="theme-card selected" data-theme="gold" onclick="selectTheme('gold')">
-                <div class="theme-preview">
-                    <div class="theme-preview-bar"
-                        style="background: linear-gradient(135deg, #0f1316 0%, #1a1a1a 30%, #d4af37 50%, #f3e5ab 70%, #aa8c2c 100%);">
-                    </div>
-                </div>
-                <div class="theme-name">Gold Classic</div>
-            </div>
-            <div class="theme-card" data-theme="emerald" onclick="selectTheme('emerald')">
-                <div class="theme-preview">
-                    <div class="theme-preview-bar"
-                        style="background: linear-gradient(135deg, #0a1612 0%, #0d1f19 30%, #10b981 50%, #6ee7b7 70%, #047857 100%);">
-                    </div>
-                </div>
-                <div class="theme-name">Emerald Oasis</div>
-            </div>
-            <div class="theme-card" data-theme="royal" onclick="selectTheme('royal')">
-                <div class="theme-preview">
-                    <div class="theme-preview-bar"
-                        style="background: linear-gradient(135deg, #0c0f1a 0%, #131830 30%, #3b82f6 50%, #93c5fd 70%, #1d4ed8 100%);">
-                    </div>
-                </div>
-                <div class="theme-name">Royal Night</div>
-            </div>
-            <div class="theme-card" data-theme="rose" onclick="selectTheme('rose')">
-                <div class="theme-preview">
-                    <div class="theme-preview-bar"
-                        style="background: linear-gradient(135deg, #16100f 0%, #251515 30%, #f43f5e 50%, #fda4af 70%, #be123c 100%);">
-                    </div>
-                </div>
-                <div class="theme-name">Rose Dawn</div>
-            </div>
-        </div>
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.firestore();
+            const auth = firebase.auth();
 
-        <label style="margin-top: 25px; display: block;">Layout Style</label>
-        <div class="theme-grid">
-            <div class="layout-card selected" data-layout="classic" onclick="selectLayout('classic')">
-                <div class="layout-preview">
-                    <svg viewBox="0 0 100 60" fill="none">
-                        <rect x="2" y="2" width="35" height="56" rx="3" fill="rgba(255,255,255,0.2)"
-                            stroke="var(--gold-primary)" stroke-width="1" />
-                        <rect x="42" y="2" width="56" height="56" rx="3" fill="rgba(255,255,255,0.1)"
-                            stroke="rgba(255,255,255,0.3)" stroke-width="1" />
-                    </svg>
-                </div>
-                <div class="theme-name">Classic</div>
-            </div>
-            <div class="layout-card" data-layout="media-focus" onclick="selectLayout('media-focus')">
-                <div class="layout-preview">
-                    <svg viewBox="0 0 100 60" fill="none">
-                        <rect x="2" y="2" width="22" height="56" rx="3" fill="rgba(255,255,255,0.2)"
-                            stroke="var(--gold-primary)" stroke-width="1" />
-                        <rect x="28" y="2" width="70" height="56" rx="3" fill="rgba(255,255,255,0.1)"
-                            stroke="rgba(255,255,255,0.3)" stroke-width="1" />
-                    </svg>
-                </div>
-                <div class="theme-name">Media Focus</div>
-            </div>
-            <div class="layout-card" data-layout="fullscreen" onclick="selectLayout('fullscreen')">
-                <div class="layout-preview">
-                    <svg viewBox="0 0 100 60" fill="none">
-                        <rect x="2" y="2" width="96" height="56" rx="3" fill="rgba(255,255,255,0.1)"
-                            stroke="rgba(255,255,255,0.3)" stroke-width="1" />
-                        <rect x="6" y="30" width="28" height="24" rx="2" fill="rgba(255,255,255,0.3)"
-                            stroke="var(--gold-primary)" stroke-width="1" />
-                    </svg>
-                </div>
-                <div class="theme-name">Full Screen</div>
-            </div>
-            <div class="layout-card" data-layout="vertical" onclick="selectLayout('vertical')">
-                <div class="layout-preview">
-                    <svg viewBox="0 0 100 60" fill="none">
-                        <rect x="2" y="2" width="96" height="30" rx="3" fill="rgba(255,255,255,0.1)"
-                            stroke="rgba(255,255,255,0.3)" stroke-width="1" />
-                        <rect x="2" y="36" width="96" height="22" rx="3" fill="rgba(255,255,255,0.2)"
-                            stroke="var(--gold-primary)" stroke-width="1" />
-                    </svg>
-                </div>
-                <div class="theme-name">Vertical</div>
-            </div>
-        </div>
+            // --- CONSTANTS (Avoid Magic Numbers) ---
+            const CONSTANTS = {
+                SLIDE_DURATION: 8000,
+                MAX_IMAGE_WIDTH: 800,
+                IMAGE_QUALITY: 0.6,
+                MAX_IMAGE_SIZE_BYTES: 500000,
+                FRIDAY_DAY_INDEX: 5,
+                CLOCK_UPDATE_INTERVAL: 1000
+            };
 
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 15px; text-align: center;">
-            <i class="fas fa-info-circle"></i> Changes apply instantly. Click Save to persist.
-        </p>
-    </div>
+            // Theme options with metadata
+            const THEME_OPTIONS = {
+                gold: { name: 'Gold Classic', primary: '#d4af37', light: '#f3e5ab', dark: '#aa8c2c' },
+                emerald: { name: 'Emerald Oasis', primary: '#10b981', light: '#6ee7b7', dark: '#047857' },
+                royal: { name: 'Royal Night', primary: '#3b82f6', light: '#93c5fd', dark: '#1d4ed8' },
+                rose: { name: 'Rose Dawn', primary: '#f43f5e', light: '#fda4af', dark: '#be123c' }
+            };
 
-    <div style="margin-top:20px; text-align:right; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
-        <button class="btn btn-primary" onclick="saveSettings()">Save & Update Cloud</button>
-    </div>
-    <div id="tab-api" class="tab-content">
-        <p style="color: var(--gold-primary); margin-bottom: 20px;">
-            <i class="fas fa-satellite-dish"></i> Prayer Times provided by Aladhan API
-        </p>
-        <div class="form-group">
-            <label>City</label>
-            <input type="text" id="api-city" class="form-control" placeholder="London">
-        </div>
-        <div class="form-group">
-            <label>Country</label>
-            <input type="text" id="api-country" class="form-control" placeholder="UK">
-        </div>
-        <div class="form-group">
-            <label>Calculation Method</label>
-            <select id="api-method" class="form-control" style="background: rgba(255, 255, 255, 0.05); color: white;">
-                <option value="3">Muslim World League</option>
-                <option value="2">ISNA</option>
-                <option value="5">Egyptian General Authority</option>
-                <option value="4">Umm Al-Qura University, Makkah</option>
-                <option value="1">University of Islamic Sciences, Karachi</option>
-                <option value="12">France (UOIF)</option>
-                <option value="13">Turkey (Diyanet)</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Asr Juristic Method</label>
-            <select id="api-school" class="form-control" style="background: rgba(255, 255, 255, 0.05); color: white;">
-                <option value="0">Shafi (Standard)</option>
-                <option value="1">Hanafi</option>
-            </select>
-        </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
+            // Layout options with metadata
+            const LAYOUT_OPTIONS = {
+                classic: { name: 'Classic', description: '40/60 split layout' },
+                'media-focus': { name: 'Media Focus', description: '25/75 split with larger slideshow' },
+                fullscreen: { name: 'Full Screen', description: 'Slideshow fullscreen with overlay schedule' },
+                vertical: { name: 'Vertical', description: 'Stacked layout for portrait displays' }
+            };
 
-    <script>
-        // --- 1. FIREBASE CONFIGURATION (PRE-FILLED WITH YOUR KEYS) ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyCirBPRHp02zVZFUp5F1t42xm0jEmZeiEc",
-            authDomain: "mosquedisplay-eab43.firebaseapp.com",
-            projectId: "mosquedisplay-eab43",
-            storageBucket: "mosquedisplay-eab43.firebasestorage.app",
-            messagingSenderId: "542105594974",
-            appId: "1:542105594974:web:63b591fa0d3cd697eb98cf"
-        };
-        // ----------------------------------------------------
+            // --- GLOBAL CONFIG & STATE ---
+            const DEFAULT_CONFIG = {
+                theme: 'gold',      // Current theme
+                layout: 'classic',  // Current layout
+                jummah: {
+                    dayIndex: CONSTANTS.FRIDAY_DAY_INDEX,
+                    startDisplayHour: 10,
+                    startDisplayMinute: 0,
+                    speechHour: 12,
+                    speechMinute: 15,
+                    khutbahHour: 12,
+                    khutbahMinute: 40,
+                    jamaatHour: 12,
+                    jamaatMinute: 45,
+                    postPrayerEndHour: 15,
+                    postPrayerEndMinute: 0
+                },
+                slides: [],
+                prayerConfig: {
+                    city: "Ravensthorpe",
+                    country: "UK",
+                    method: 3, // Muslim World League
+                    school: 1  // Hanafi
+                }
+            };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
+            let APP_CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 
-        // --- CONSTANTS (Avoid Magic Numbers) ---
-        const CONSTANTS = {
-            SLIDE_DURATION: 8000,
-            MAX_IMAGE_WIDTH: 800,
-            IMAGE_QUALITY: 0.6,
-            MAX_IMAGE_SIZE_BYTES: 500000,
-            FRIDAY_DAY_INDEX: 5,
-            CLOCK_UPDATE_INTERVAL: 1000
-        };
+            // --- DOM ELEMENTS ---
+            const slideshowContainer = document.getElementById('slideshow-container');
+            const progressBar = document.getElementById('slide-progress');
+            const loadingMessage = document.getElementById('loading-message');
+            const staticSlides = Array.from(document.querySelectorAll('.static-slide'));
 
-        // Theme options with metadata
-        const THEME_OPTIONS = {
-            gold: { name: 'Gold Classic', primary: '#d4af37', light: '#f3e5ab', dark: '#aa8c2c' },
-            emerald: { name: 'Emerald Oasis', primary: '#10b981', light: '#6ee7b7', dark: '#047857' },
-            royal: { name: 'Royal Night', primary: '#3b82f6', light: '#93c5fd', dark: '#1d4ed8' },
-            rose: { name: 'Rose Dawn', primary: '#f43f5e', light: '#fda4af', dark: '#be123c' }
-        };
 
-        // Layout options with metadata
-        const LAYOUT_OPTIONS = {
-            classic: { name: 'Classic', description: '40/60 split layout' },
-            'media-focus': { name: 'Media Focus', description: '25/75 split with larger slideshow' },
-            fullscreen: { name: 'Full Screen', description: 'Slideshow fullscreen with overlay schedule' },
-            vertical: { name: 'Vertical', description: 'Stacked layout for portrait displays' }
-        };
 
-        // --- GLOBAL CONFIG & STATE ---
-        const DEFAULT_CONFIG = {
-            theme: 'gold',      // Current theme
-            layout: 'classic',  // Current layout
-            jummah: {
-                dayIndex: CONSTANTS.FRIDAY_DAY_INDEX,
-                startDisplayHour: 10,
-                startDisplayMinute: 0,
-                speechHour: 12,
-                speechMinute: 15,
-                khutbahHour: 12,
-                khutbahMinute: 40,
-                jamaatHour: 12,
-                jamaatMinute: 45,
-                postPrayerEndHour: 15,
-                postPrayerEndMinute: 0
-            },
-            slides: [],
-            prayerConfig: {
-                city: "Ravensthorpe",
-                country: "UK",
-                method: 3, // Muslim World League
-                school: 1  // Hanafi
+            // --- UTILITY FUNCTIONS ---
+            /**
+             * Escapes HTML entities to prevent XSS attacks
+             * @param {string} text - The text to escape
+             * @returns {string} - Escaped HTML string
+             */
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
             }
-        };
 
-        let APP_CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
-
-        // --- DOM ELEMENTS ---
-        const slideshowContainer = document.getElementById('slideshow-container');
-        const progressBar = document.getElementById('slide-progress');
-        const loadingMessage = document.getElementById('loading-message');
-        const staticSlides = Array.from(document.querySelectorAll('.static-slide'));
-
-
-
-        // --- UTILITY FUNCTIONS ---
-        /**
-         * Escapes HTML entities to prevent XSS attacks
-         * @param {string} text - The text to escape
-         * @returns {string} - Escaped HTML string
-         */
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        /**
-         * Validates if a string is a valid HTTP/HTTPS URL or data URL
-         * @param {string} string - The URL to validate
-         * @returns {boolean} - True if valid URL
-         */
-        function isValidUrl(string) {
-            // Allow data URLs (for base64 images)
-            if (string.startsWith('data:image/')) {
-                return true;
+            /**
+             * Validates if a string is a valid HTTP/HTTPS URL or data URL
+             * @param {string} string - The URL to validate
+             * @returns {boolean} - True if valid URL
+             */
+            function isValidUrl(string) {
+                // Allow data URLs (for base64 images)
+                if (string.startsWith('data:image/')) {
+                    return true;
+                }
+                try {
+                    const url = new URL(string);
+                    return url.protocol === 'http:' || url.protocol === 'https:';
+                } catch {
+                    return false;
+                }
             }
-            try {
-                const url = new URL(string);
-                return url.protocol === 'http:' || url.protocol === 'https:';
-            } catch {
-                return false;
+
+            /**
+             * Validates a time input value within a range
+             * @param {string|number} value - The input value
+             * @param {number} min - Minimum allowed value
+             * @param {number} max - Maximum allowed value  
+             * @param {number} fallback - Default value if invalid
+             * @returns {number} - Validated number
+             */
+            function validateTimeInput(value, min, max, fallback) {
+                const num = parseInt(value, 10);
+                if (isNaN(num) || num < min || num > max) {
+                    return fallback;
+                }
+                return num;
             }
-        }
 
-        /**
-         * Validates a time input value within a range
-         * @param {string|number} value - The input value
-         * @param {number} min - Minimum allowed value
-         * @param {number} max - Maximum allowed value  
-         * @param {number} fallback - Default value if invalid
-         * @returns {number} - Validated number
-         */
-        function validateTimeInput(value, min, max, fallback) {
-            const num = parseInt(value, 10);
-            if (isNaN(num) || num < min || num > max) {
-                return fallback;
+            // --- INITIALIZATION ---
+            /**
+             * Initializes the application - sets up listeners and starts clock
+             */
+            function initApp() {
+                setupRealtimeListener(); // Connect to Cloud
+
+                updateClock();
+                setInterval(updateClock, CONSTANTS.CLOCK_UPDATE_INTERVAL);
+                fetchPrayerTimes(); // Fetch immediately
+                // Refetch prayers every hour to ensure date changes are handled
+                setInterval(fetchPrayerTimes, 60 * 60 * 1000);
             }
-            return num;
-        }
 
-        // --- INITIALIZATION ---
-        /**
-         * Initializes the application - sets up listeners and starts clock
-         */
-        function initApp() {
-            setupRealtimeListener(); // Connect to Cloud
+            // --- REALTIME DATABASE CONNECTION ---
+            /**
+             * Sets up Firebase real-time listeners for settings and slides
+             */
+            function setupRealtimeListener() {
+                // 1. Listen to SETTINGS (Timings, Theme, Layout) - with error handler
+                db.collection("mosque_data").doc("settings")
+                    .onSnapshot((doc) => {
+                        if (doc.exists) {
+                            const data = doc.data();
+                            APP_CONFIG.jummah = data.jummah || DEFAULT_CONFIG.jummah;
+                            APP_CONFIG.theme = data.theme || DEFAULT_CONFIG.theme;
+                            APP_CONFIG.layout = data.layout || DEFAULT_CONFIG.layout;
+                            APP_CONFIG.prayerConfig = data.prayerConfig || DEFAULT_CONFIG.prayerConfig;
 
-            updateClock();
-            setInterval(updateClock, CONSTANTS.CLOCK_UPDATE_INTERVAL);
-            fetchPrayerTimes(); // Fetch immediately
-            // Refetch prayers every hour to ensure date changes are handled
-            setInterval(fetchPrayerTimes, 60 * 60 * 1000);
-        }
-
-        // --- REALTIME DATABASE CONNECTION ---
-        /**
-         * Sets up Firebase real-time listeners for settings and slides
-         */
-        function setupRealtimeListener() {
-            // 1. Listen to SETTINGS (Timings, Theme, Layout) - with error handler
-            db.collection("mosque_data").doc("settings")
-                .onSnapshot((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        APP_CONFIG.jummah = data.jummah || DEFAULT_CONFIG.jummah;
-                        APP_CONFIG.theme = data.theme || DEFAULT_CONFIG.theme;
-                        APP_CONFIG.layout = data.layout || DEFAULT_CONFIG.layout;
-                        APP_CONFIG.prayerConfig = data.prayerConfig || DEFAULT_CONFIG.prayerConfig;
-
-                        updateJummahTimesDisplay();
-                        updateClock();
-                        applyTheme(APP_CONFIG.theme);   // Apply saved theme
-                        applyLayout(APP_CONFIG.layout); // Apply saved layout
-                        fetchPrayerTimes(); // Re-fetch with new settings
-                    } else {
-                        db.collection("mosque_data").doc("settings").set({
-                            jummah: DEFAULT_CONFIG.jummah,
-                            theme: DEFAULT_CONFIG.theme,
-                            layout: DEFAULT_CONFIG.layout,
-                            prayerConfig: DEFAULT_CONFIG.prayerConfig
-                        });
-                    }
-                }, (error) => {
-                    console.error("Error getting settings: ", error);
-                });
-
-            // 2. Listen to SLIDES (Separate Collection for Unlimited Storage)
-            db.collection("slides").orderBy("order", "asc")
-                .onSnapshot((snapshot) => {
-                    APP_CONFIG.slides = [];
-                    snapshot.forEach((doc) => {
-                        const s = doc.data();
-                        // Add ID so we can update/delete later
-                        APP_CONFIG.slides.push({ ...s, id: doc.id });
+                            updateJummahTimesDisplay();
+                            updateClock();
+                            applyTheme(APP_CONFIG.theme);   // Apply saved theme
+                            applyLayout(APP_CONFIG.layout); // Apply saved layout
+                            fetchPrayerTimes(); // Re-fetch with new settings
+                        } else {
+                            db.collection("mosque_data").doc("settings").set({
+                                jummah: DEFAULT_CONFIG.jummah,
+                                theme: DEFAULT_CONFIG.theme,
+                                layout: DEFAULT_CONFIG.layout,
+                                prayerConfig: DEFAULT_CONFIG.prayerConfig
+                            });
+                        }
+                    }, (error) => {
+                        console.error("Error getting settings: ", error);
                     });
 
-                    renderAdminSlideList();
-                    initSlideshowFromConfig(); // Reload slideshow
+                // 2. Listen to SLIDES (Separate Collection for Unlimited Storage)
+                db.collection("slides").orderBy("order", "asc")
+                    .onSnapshot((snapshot) => {
+                        APP_CONFIG.slides = [];
+                        snapshot.forEach((doc) => {
+                            const s = doc.data();
+                            // Add ID so we can update/delete later
+                            APP_CONFIG.slides.push({ ...s, id: doc.id });
+                        });
 
-                    if (snapshot.empty) {
-                        console.log("No slides found in collection.");
-                    }
-                }, (error) => {
-                    console.error("Error getting slides: ", error);
-                });
-        }
+                        renderAdminSlideList();
+                        initSlideshowFromConfig(); // Reload slideshow
 
-
-
-        /**
-         * Applies a theme to the page by setting data-theme attribute
-         * @param {string} themeName - Theme identifier (gold, emerald, royal, rose)
-         */
-        function applyTheme(themeName) {
-            if (!THEME_OPTIONS[themeName]) themeName = 'gold';
-            document.body.setAttribute('data-theme', themeName);
-            APP_CONFIG.theme = themeName;
-
-            // Update theme card selection UI
-            document.querySelectorAll('.theme-card').forEach(card => {
-                card.classList.remove('selected');
-                if (card.dataset.theme === themeName) {
-                    card.classList.add('selected');
-                }
-            });
-        }
-
-        /**
-         * Handles theme card click - applies theme instantly
-         * @param {string} themeName - Theme identifier
-         */
-        function selectTheme(themeName) {
-            applyTheme(themeName);
-        }
-
-        /**
-         * Applies a layout to the page by setting data-layout attribute
-         * @param {string} layoutName - Layout identifier (classic, media-focus, fullscreen, vertical)
-         */
-        function applyLayout(layoutName) {
-            if (!LAYOUT_OPTIONS[layoutName]) layoutName = 'classic';
-            document.body.setAttribute('data-layout', layoutName);
-            APP_CONFIG.layout = layoutName;
-
-            // Update layout card selection UI
-            document.querySelectorAll('.layout-card').forEach(card => {
-                card.classList.remove('selected');
-                if (card.dataset.layout === layoutName) {
-                    card.classList.add('selected');
-                }
-            });
-        }
-
-        /**
-         * Handles layout card click - applies layout instantly
-         * @param {string} layoutName - Layout identifier
-         */
-        function selectLayout(layoutName) {
-            applyLayout(layoutName);
-        }
-
-        // --- SETTINGS MANAGEMENT ---
-
-
-        // --- SLIDESHOW ENGINE ---
-        /**
-         * Initializes the slideshow from the current configuration
-         * Creates slide elements from dynamic slides and prepares animation
-         */
-        function initSlideshowFromConfig() {
-            // Stop existing animation
-            if (currentAnimationFrame) cancelAnimationFrame(currentAnimationFrame);
-
-            // Clear Dynamic Slides from DOM
-            dynamicSlides.forEach(el => el.remove());
-            dynamicSlides = [];
-
-            // Filter visible slides only
-            const visibleSlides = APP_CONFIG.slides.filter(s => s.visible);
-
-            if (visibleSlides.length === 0) {
-                loadingMessage.innerText = "Display Active";
-                loadingMessage.style.display = 'none'; // Just hide loader, show static slides
-                startSlideshowAnimation([...staticSlides]); // Animate static slides only
-                return;
+                        if (snapshot.empty) {
+                            console.log("No slides found in collection.");
+                        }
+                    }, (error) => {
+                        console.error("Error getting slides: ", error);
+                    });
             }
 
-            loadingMessage.innerText = "Loading slides...";
-            loadingMessage.style.display = 'block';
 
-            let loadedCount = 0;
 
-            // Note: Since we need correct order, we will create elements first, then append.
-            const slideElements = [];
+            /**
+             * Applies a theme to the page by setting data-theme attribute
+             * @param {string} themeName - Theme identifier (gold, emerald, royal, rose)
+             */
+            function applyTheme(themeName) {
+                if (!THEME_OPTIONS[themeName]) themeName = 'gold';
+                document.body.setAttribute('data-theme', themeName);
+                APP_CONFIG.theme = themeName;
 
-            visibleSlides.forEach((slideItem, index) => {
-                const slideDiv = document.createElement('div');
-                slideDiv.className = 'slide';
+                // Update theme card selection UI
+                document.querySelectorAll('.theme-card').forEach(card => {
+                    card.classList.remove('selected');
+                    if (card.dataset.theme === themeName) {
+                        card.classList.add('selected');
+                    }
+                });
+            }
 
-                const bgLayer = document.createElement('div');
-                bgLayer.className = 'slide-bg';
+            /**
+             * Handles theme card click - applies theme instantly
+             * @param {string} themeName - Theme identifier
+             */
+            function selectTheme(themeName) {
+                applyTheme(themeName);
+            }
 
-                const contentLayer = document.createElement('div');
-                contentLayer.className = 'slide-content';
+            /**
+             * Applies a layout to the page by setting data-layout attribute
+             * @param {string} layoutName - Layout identifier (classic, media-focus, fullscreen, vertical)
+             */
+            function applyLayout(layoutName) {
+                if (!LAYOUT_OPTIONS[layoutName]) layoutName = 'classic';
+                document.body.setAttribute('data-layout', layoutName);
+                APP_CONFIG.layout = layoutName;
 
-                // Image Loading Logic
-                const img = new Image();
-                img.onload = () => {
-                    bgLayer.style.backgroundImage = `url('${slideItem.url}')`;
-                    contentLayer.style.backgroundImage = `url('${slideItem.url}')`;
-                    checkAllLoaded();
-                };
-                img.onerror = () => {
-                    console.warn(`Failed to load: ${slideItem.url}`);
-                    checkAllLoaded();
-                };
-                img.src = slideItem.url;
+                // Update layout card selection UI
+                document.querySelectorAll('.layout-card').forEach(card => {
+                    card.classList.remove('selected');
+                    if (card.dataset.layout === layoutName) {
+                        card.classList.add('selected');
+                    }
+                });
+            }
 
-                slideDiv.appendChild(bgLayer);
-                slideDiv.appendChild(contentLayer);
+            /**
+             * Handles layout card click - applies layout instantly
+             * @param {string} layoutName - Layout identifier
+             */
+            function selectLayout(layoutName) {
+                applyLayout(layoutName);
+            }
 
-                // Add Welcome Overlay to First Slide
-                if (index === 0) {
-                    const overlayDiv = document.createElement('div');
-                    overlayDiv.className = 'slide-overlay';
-                    overlayDiv.innerHTML = `
+            // --- SETTINGS MANAGEMENT ---
+
+
+            // --- SLIDESHOW ENGINE ---
+            /**
+             * Initializes the slideshow from the current configuration
+             * Creates slide elements from dynamic slides and prepares animation
+             */
+            function initSlideshowFromConfig() {
+                // Stop existing animation
+                if (currentAnimationFrame) cancelAnimationFrame(currentAnimationFrame);
+
+                // Clear Dynamic Slides from DOM
+                dynamicSlides.forEach(el => el.remove());
+                dynamicSlides = [];
+
+                // Filter visible slides only
+                const visibleSlides = APP_CONFIG.slides.filter(s => s.visible);
+
+                if (visibleSlides.length === 0) {
+                    loadingMessage.innerText = "Display Active";
+                    loadingMessage.style.display = 'none'; // Just hide loader, show static slides
+                    startSlideshowAnimation([...staticSlides]); // Animate static slides only
+                    return;
+                }
+
+                loadingMessage.innerText = "Loading slides...";
+                loadingMessage.style.display = 'block';
+
+                let loadedCount = 0;
+
+                // Note: Since we need correct order, we will create elements first, then append.
+                const slideElements = [];
+
+                visibleSlides.forEach((slideItem, index) => {
+                    const slideDiv = document.createElement('div');
+                    slideDiv.className = 'slide';
+
+                    const bgLayer = document.createElement('div');
+                    bgLayer.className = 'slide-bg';
+
+                    const contentLayer = document.createElement('div');
+                    contentLayer.className = 'slide-content';
+
+                    // Image Loading Logic
+                    const img = new Image();
+                    img.onload = () => {
+                        bgLayer.style.backgroundImage = `url('${slideItem.url}')`;
+                        contentLayer.style.backgroundImage = `url('${slideItem.url}')`;
+                        checkAllLoaded();
+                    };
+                    img.onerror = () => {
+                        console.warn(`Failed to load: ${slideItem.url}`);
+                        checkAllLoaded();
+                    };
+                    img.src = slideItem.url;
+
+                    slideDiv.appendChild(bgLayer);
+                    slideDiv.appendChild(contentLayer);
+
+                    // Add Welcome Overlay to First Slide
+                    if (index === 0) {
+                        const overlayDiv = document.createElement('div');
+                        overlayDiv.className = 'slide-overlay';
+                        overlayDiv.innerHTML = `
                         <div class="slide-text">
                             <h2>Welcome</h2>
                             <p>To Faizan-E-Madinah & Education Center</p>
                         </div>
                      `;
-                    slideDiv.appendChild(overlayDiv);
-                }
-
-                slideElements.push(slideDiv);
-            });
-
-            function checkAllLoaded() {
-                loadedCount++;
-                if (loadedCount === visibleSlides.length) {
-                    loadingMessage.style.display = 'none';
-
-                    // Add to DOM in order
-                    slideElements.forEach(el => {
-                        if (staticSlides.length > 0) slideshowContainer.insertBefore(el, staticSlides[0]);
-                        else slideshowContainer.appendChild(el);
-                        dynamicSlides.push(el);
-                    });
-
-                    startSlideshowAnimation([...dynamicSlides, ...staticSlides]);
-                }
-            }
-        }
-
-        /**
-         * Starts the slideshow animation with proper cleanup
-         * @param {HTMLElement[]} allSlides - Array of slide elements to animate
-         */
-        function startSlideshowAnimation(allSlides) {
-            // Cancel any existing animation to prevent memory leaks
-            if (currentAnimationFrame) {
-                cancelAnimationFrame(currentAnimationFrame);
-                currentAnimationFrame = null;
-            }
-
-            currentSlideIndex = 0;
-
-            // Reset all
-            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
-
-            if (allSlides.length === 0) return;
-
-            allSlides[0].classList.add('active');
-
-            let startTime = Date.now();
-
-            function animate() {
-                const now = Date.now();
-                const elapsed = now - startTime;
-                const progress = Math.min((elapsed / CONSTANTS.SLIDE_DURATION) * 100, 100);
-
-                if (progressBar) progressBar.style.width = progress + "%";
-
-                if (elapsed >= CONSTANTS.SLIDE_DURATION) {
-                    allSlides[currentSlideIndex].classList.remove('active');
-                    currentSlideIndex = (currentSlideIndex + 1) % allSlides.length;
-                    allSlides[currentSlideIndex].classList.add('active');
-
-                    startTime = Date.now();
-                    if (progressBar) progressBar.style.width = "0%";
-                }
-
-                currentAnimationFrame = requestAnimationFrame(animate);
-            }
-
-            if (allSlides.length > 1) {
-                progressBar.style.display = 'block';
-                currentAnimationFrame = requestAnimationFrame(animate);
-            } else {
-                progressBar.style.display = 'none';
-            }
-        }
-
-        // --- JUMMAH TIMES DISPLAY ---
-        function updateJummahTimesDisplay() {
-            // Check if today is Friday (Day 5)
-            const today = new Date();
-            const isFriday = today.getDay() === 5;
-
-            const jummahContainer = document.querySelector('.jummah-container');
-            const countdownContainer = document.getElementById('countdown-container');
-
-            if (!isFriday) {
-                if (jummahContainer) jummahContainer.style.display = 'none';
-                if (countdownContainer) countdownContainer.style.display = 'none';
-                return; // Exit if not Friday
-            }
-
-            // If Friday, ensure they are visible
-            if (jummahContainer) jummahContainer.style.display = 'flex';
-            // Countdown visibility is handled by updateClock logic below, but we ensure container is potentially visible here
-
-            // Re-render times
-            const j = APP_CONFIG.jummah;
-
-            const formatTime = (hour, minute) => {
-                const period = hour >= 12 ? 'PM' : 'AM';
-                const displayHour = hour % 12 || 12;
-                const displayMinute = minute < 10 ? '0' + minute : minute;
-                return `${displayHour}:${displayMinute} ${period}`;
-            };
-
-            document.getElementById('speech-time').innerText = formatTime(j.speechHour, j.speechMinute);
-            document.getElementById('khutbah-time').innerText = formatTime(j.khutbahHour, j.khutbahMinute);
-            document.getElementById('jamaat-time').innerText = formatTime(j.jamaatHour, j.jamaatMinute);
-        }
-
-        // --- CLOCK & COUNTDOWN ---
-        function updateClock() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-            document.getElementById('clock-time').innerText = timeString;
-
-            const dateOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-            document.getElementById('clock-date').innerText = now.toLocaleDateString('en-GB', dateOptions);
-        }
-
-        /**
-         * Gets the ordinal suffix for a day number (st, nd, rd, th)
-         * @param {number} day - Day of month (1-31)
-         * @returns {string} - Ordinal suffix
-         */
-        function getOrdinalSuffix(day) {
-            if (day > 3 && day < 21) return 'th';
-            switch (day % 10) {
-                case 1:
-                    return "st";
-                case 2:
-                    return "nd";
-                case 3:
-                    return "rd";
-                default:
-                    return "th";
-            }
-        }
-
-
-
-        // --- ALADHAN API INTEGRATION ---
-        function fetchPrayerTimes() {
-            if (!APP_CONFIG.prayerConfig) return;
-
-            const { city, country, method, school } = APP_CONFIG.prayerConfig;
-            if (!city || !country) return;
-
-            // Aladhan API Endpoint
-            const apiUrl = `https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&method=${method}&school=${school}`;
-
-            fetch(apiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.code === 200) {
-                        const timings = data.data.timings;
-                        updateDailyPrayerDisplay(timings);
-                    } else {
-                        console.error('Error fetching prayer times:', data.status);
+                        slideDiv.appendChild(overlayDiv);
                     }
-                })
-                .catch(error => console.error('Network Error:', error));
-        }
 
-        function updateDailyPrayerDisplay(timings) {
-            // Helper to clean time string (remove timezone abbreviations if any)
-            const cleanTime = (t) => t.split(' ')[0];
+                    slideElements.push(slideDiv);
+                });
 
-            document.getElementById('time-fajr').innerText = cleanTime(timings.Fajr);
-            document.getElementById('time-sunrise').innerText = cleanTime(timings.Sunrise);
-            document.getElementById('time-dhuhr').innerText = cleanTime(timings.Dhuhr);
-            document.getElementById('time-asr').innerText = cleanTime(timings.Asr);
-            document.getElementById('time-maghrib').innerText = cleanTime(timings.Maghrib);
-            document.getElementById('time-isha').innerText = cleanTime(timings.Isha);
+                function checkAllLoaded() {
+                    loadedCount++;
+                    if (loadedCount === visibleSlides.length) {
+                        loadingMessage.style.display = 'none';
 
-            highlightCurrentPrayer(timings);
-        }
+                        // Add to DOM in order
+                        slideElements.forEach(el => {
+                            if (staticSlides.length > 0) slideshowContainer.insertBefore(el, staticSlides[0]);
+                            else slideshowContainer.appendChild(el);
+                            dynamicSlides.push(el);
+                        });
 
-        function highlightCurrentPrayer(timings) {
-            // Remove existing highlights
-            document.querySelectorAll('.prayer-slot').forEach(el => el.classList.remove('highlight'));
-
-            const now = new Date();
-            const currentTime = now.getHours() * 60 + now.getMinutes();
-
-            const prayers = [
-                { id: 'slot-fajr', time: timings.Fajr },
-                { id: 'slot-sunrise', time: timings.Sunrise },
-                { id: 'slot-dhuhr', time: timings.Dhuhr },
-                { id: 'slot-asr', time: timings.Asr },
-                { id: 'slot-maghrib', time: timings.Maghrib },
-                { id: 'slot-isha', time: timings.Isha }
-            ];
-
-            let nextPrayerId = null;
-
-            for (let i = 0; i < prayers.length; i++) {
-                const [h, m] = prayers[i].time.split(':').map(Number);
-                const pTime = h * 60 + m;
-
-                if (currentTime < pTime) {
-                    nextPrayerId = prayers[i].id;
-                    break;
+                        startSlideshowAnimation([...dynamicSlides, ...staticSlides]);
+                    }
                 }
             }
 
-            // If no next prayer found today, it means next is Fajr tomorrow
-            if (!nextPrayerId) {
-                nextPrayerId = 'slot-fajr';
+            /**
+             * Starts the slideshow animation with proper cleanup
+             * @param {HTMLElement[]} allSlides - Array of slide elements to animate
+             */
+            function startSlideshowAnimation(allSlides) {
+                // Cancel any existing animation to prevent memory leaks
+                if (currentAnimationFrame) {
+                    cancelAnimationFrame(currentAnimationFrame);
+                    currentAnimationFrame = null;
+                }
+
+                currentSlideIndex = 0;
+
+                // Reset all
+                document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+
+                if (allSlides.length === 0) return;
+
+                allSlides[0].classList.add('active');
+
+                let startTime = Date.now();
+
+                function animate() {
+                    const now = Date.now();
+                    const elapsed = now - startTime;
+                    const progress = Math.min((elapsed / CONSTANTS.SLIDE_DURATION) * 100, 100);
+
+                    if (progressBar) progressBar.style.width = progress + "%";
+
+                    if (elapsed >= CONSTANTS.SLIDE_DURATION) {
+                        allSlides[currentSlideIndex].classList.remove('active');
+                        currentSlideIndex = (currentSlideIndex + 1) % allSlides.length;
+                        allSlides[currentSlideIndex].classList.add('active');
+
+                        startTime = Date.now();
+                        if (progressBar) progressBar.style.width = "0%";
+                    }
+
+                    currentAnimationFrame = requestAnimationFrame(animate);
+                }
+
+                if (allSlides.length > 1) {
+                    progressBar.style.display = 'block';
+                    currentAnimationFrame = requestAnimationFrame(animate);
+                } else {
+                    progressBar.style.display = 'none';
+                }
             }
 
-            if (nextPrayerId) {
-                const el = document.getElementById(nextPrayerId);
-                if (el) el.classList.add('highlight');
-            }
-        }
+            // --- JUMMAH TIMES DISPLAY ---
+            function updateJummahTimesDisplay() {
+                // Check if today is Friday (Day 5)
+                const today = new Date();
+                const isFriday = today.getDay() === 5;
 
-        // Start App
-        initApp();
-    </script>
+                const jummahContainer = document.querySelector('.jummah-container');
+                const countdownContainer = document.getElementById('countdown-container');
+
+                if (!isFriday) {
+                    if (jummahContainer) jummahContainer.style.display = 'none';
+                    if (countdownContainer) countdownContainer.style.display = 'none';
+                    return; // Exit if not Friday
+                }
+
+                // If Friday, ensure they are visible
+                if (jummahContainer) jummahContainer.style.display = 'flex';
+                // Countdown visibility is handled by updateClock logic below, but we ensure container is potentially visible here
+
+                // Re-render times
+                const j = APP_CONFIG.jummah;
+
+                const formatTime = (hour, minute) => {
+                    const period = hour >= 12 ? 'PM' : 'AM';
+                    const displayHour = hour % 12 || 12;
+                    const displayMinute = minute < 10 ? '0' + minute : minute;
+                    return `${displayHour}:${displayMinute} ${period}`;
+                };
+
+                document.getElementById('speech-time').innerText = formatTime(j.speechHour, j.speechMinute);
+                document.getElementById('khutbah-time').innerText = formatTime(j.khutbahHour, j.khutbahMinute);
+                document.getElementById('jamaat-time').innerText = formatTime(j.jamaatHour, j.jamaatMinute);
+            }
+
+            // --- CLOCK & COUNTDOWN ---
+            function updateClock() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                document.getElementById('clock-time').innerText = timeString;
+
+                const dateOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                document.getElementById('clock-date').innerText = now.toLocaleDateString('en-GB', dateOptions);
+            }
+
+            /**
+             * Gets the ordinal suffix for a day number (st, nd, rd, th)
+             * @param {number} day - Day of month (1-31)
+             * @returns {string} - Ordinal suffix
+             */
+            function getOrdinalSuffix(day) {
+                if (day > 3 && day < 21) return 'th';
+                switch (day % 10) {
+                    case 1:
+                        return "st";
+                    case 2:
+                        return "nd";
+                    case 3:
+                        return "rd";
+                    default:
+                        return "th";
+                }
+            }
+
+
+
+            // --- ALADHAN API INTEGRATION ---
+            function fetchPrayerTimes() {
+                if (!APP_CONFIG.prayerConfig) return;
+
+                const { city, country, method, school } = APP_CONFIG.prayerConfig;
+                if (!city || !country) return;
+
+                // Aladhan API Endpoint
+                const apiUrl = `https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&method=${method}&school=${school}`;
+
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.code === 200) {
+                            const timings = data.data.timings;
+                            updateDailyPrayerDisplay(timings);
+                        } else {
+                            console.error('Error fetching prayer times:', data.status);
+                        }
+                    })
+                    .catch(error => console.error('Network Error:', error));
+            }
+
+            function updateDailyPrayerDisplay(timings) {
+                // Helper to clean time string (remove timezone abbreviations if any)
+                const cleanTime = (t) => t.split(' ')[0];
+
+                document.getElementById('time-fajr').innerText = cleanTime(timings.Fajr);
+                document.getElementById('time-sunrise').innerText = cleanTime(timings.Sunrise);
+                document.getElementById('time-dhuhr').innerText = cleanTime(timings.Dhuhr);
+                document.getElementById('time-asr').innerText = cleanTime(timings.Asr);
+                document.getElementById('time-maghrib').innerText = cleanTime(timings.Maghrib);
+                document.getElementById('time-isha').innerText = cleanTime(timings.Isha);
+
+                highlightCurrentPrayer(timings);
+            }
+
+            function highlightCurrentPrayer(timings) {
+                // Remove existing highlights
+                document.querySelectorAll('.prayer-slot').forEach(el => el.classList.remove('highlight'));
+
+                const now = new Date();
+                const currentTime = now.getHours() * 60 + now.getMinutes();
+
+                const prayers = [
+                    { id: 'slot-fajr', time: timings.Fajr },
+                    { id: 'slot-sunrise', time: timings.Sunrise },
+                    { id: 'slot-dhuhr', time: timings.Dhuhr },
+                    { id: 'slot-asr', time: timings.Asr },
+                    { id: 'slot-maghrib', time: timings.Maghrib },
+                    { id: 'slot-isha', time: timings.Isha }
+                ];
+
+                let nextPrayerId = null;
+
+                for (let i = 0; i < prayers.length; i++) {
+                    const [h, m] = prayers[i].time.split(':').map(Number);
+                    const pTime = h * 60 + m;
+
+                    if (currentTime < pTime) {
+                        nextPrayerId = prayers[i].id;
+                        break;
+                    }
+                }
+
+                // If no next prayer found today, it means next is Fajr tomorrow
+                if (!nextPrayerId) {
+                    nextPrayerId = 'slot-fajr';
+                }
+
+                if (nextPrayerId) {
+                    const el = document.getElementById(nextPrayerId);
+                    if (el) el.classList.add('highlight');
+                }
+            }
+
+            // Start App
+            initApp();
+        </script>
 </body>
 
 </html>
