@@ -443,178 +443,220 @@
                     </div>
                 </div>
 
-                <!-- 2. SLIDES -->
-                <div id="tab-slides" class="tab-content">
-
-                    <div class="form-group"
-                        style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; border:1px dashed var(--gold-primary); margin-bottom: 20px;">
-                        <label style="color:var(--gold-primary); margin-bottom: 10px;"><i
-                                class="fas fa-cloud-upload-alt"></i> Upload New Slide (Image File)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="file" id="input-slide-file" class="form-control" accept="image/*">
-                            <button class="btn btn-primary" id="btn-upload" onclick="uploadSlideFile()">Upload</button>
-                        </div>
-                        <small style="color: #aaa; margin-top:5px; display:block;">Supported: JPG, PNG, GIF</small>
-                    </div>
-
-                    <div
-                        style="text-align:center; margin:15px 0; color:var(--text-muted); position:relative; margin-bottom: 20px;">
-                        <span
-                            style="background: rgb(20,20,20); padding:0 10px; position:relative; z-index:1; font-size: 0.85rem;">OR
-                            ADD VIA LINK</span>
-                        <div
-                            style="position:absolute; top:50%; left:0; width:100%; height:1px; background:rgba(255,255,255,0.1); z-index:0;">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Add Slide via URL</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="text" id="input-slide-url" class="form-control"
-                                placeholder="https://example.com/image.jpg">
-                            <button class="btn btn-primary" onclick="addNewSlide()">Add</button>
-                        </div>
-                    </div>
-
-                    <label style="margin-top:20px;">Active Slides</label>
-                    <ul id="admin-slide-list" class="slide-list">
-                        <!-- Populated by JS -->
-                    </ul>
-                </div>
-
-                <!-- 3. APPEARANCE -->
-                <div id="tab-appearance" class="tab-content">
-                    <label>Color Scheme</label>
-                    <div class="theme-grid">
-                        <div class="theme-card" data-theme="gold" onclick="selectTheme('gold')">
-                            <div class="theme-preview">
-                                <div class="theme-preview-bar"
-                                    style="background: linear-gradient(135deg, #0f1316 0%, #1a1a1a 30%, #d4af37 50%, #f3e5ab 70%, #aa8c2c 100%);">
-                                </div>
-                            </div>
-                            <div class="theme-name">Gold Classic</div>
-                        </div>
-                        <div class="theme-card" data-theme="emerald" onclick="selectTheme('emerald')">
-                            <div class="theme-preview">
-                                <div class="theme-preview-bar"
-                                    style="background: linear-gradient(135deg, #0a1612 0%, #0d1f19 30%, #10b981 50%, #6ee7b7 70%, #047857 100%);">
-                                </div>
-                            </div>
-                            <div class="theme-name">Emerald Oasis</div>
-                        </div>
-                        <div class="theme-card" data-theme="royal" onclick="selectTheme('royal')">
-                            <div class="theme-preview">
-                                <div class="theme-preview-bar"
-                                    style="background: linear-gradient(135deg, #0c0f1a 0%, #131830 30%, #3b82f6 50%, #93c5fd 70%, #1d4ed8 100%);">
-                                </div>
-                            </div>
-                            <div class="theme-name">Royal Night</div>
-                        </div>
-                        <div class="theme-card" data-theme="rose" onclick="selectTheme('rose')">
-                            <div class="theme-preview">
-                                <div class="theme-preview-bar"
-                                    style="background: linear-gradient(135deg, #16100f 0%, #251515 30%, #f43f5e 50%, #fda4af 70%, #be123c 100%);">
-                                </div>
-                            </div>
-                            <div class="theme-name">Rose Dawn</div>
-                        </div>
-                    </div>
-
-                    <label style="margin-top: 25px; display: block;">Layout Style</label>
-                    <div class="theme-grid">
-                        <div class="layout-card" data-layout="classic" onclick="selectLayout('classic')">
-                            <div class="layout-preview">
-                                <svg viewBox="0 0 100 60" fill="none">
-                                    <rect x="2" y="2" width="35" height="56" rx="3" fill="rgba(255,255,255,0.2)"
-                                        stroke="var(--gold-primary)" stroke-width="1" />
-                                    <rect x="42" y="2" width="56" height="56" rx="3" fill="rgba(255,255,255,0.1)"
-                                        stroke="rgba(255,255,255,0.3)" stroke-width="1" />
-                                </svg>
-                            </div>
-                            <div class="theme-name">Classic</div>
-                        </div>
-                        <div class="layout-card" data-layout="media-focus" onclick="selectLayout('media-focus')">
-                            <div class="layout-preview">
-                                <svg viewBox="0 0 100 60" fill="none">
-                                    <rect x="2" y="2" width="22" height="56" rx="3" fill="rgba(255,255,255,0.2)"
-                                        stroke="var(--gold-primary)" stroke-width="1" />
-                                    <rect x="28" y="2" width="70" height="56" rx="3" fill="rgba(255,255,255,0.1)"
-                                        stroke="rgba(255,255,255,0.3)" stroke-width="1" />
-                                </svg>
-                            </div>
-                            <div class="theme-name">Media Focus</div>
-                        </div>
-                        <div class="layout-card" data-layout="fullscreen" onclick="selectLayout('fullscreen')">
-                            <div class="layout-preview">
-                                <svg viewBox="0 0 100 60" fill="none">
-                                    <rect x="2" y="2" width="96" height="56" rx="3" fill="rgba(255,255,255,0.1)"
-                                        stroke="rgba(255,255,255,0.3)" stroke-width="1" />
-                                    <rect x="6" y="30" width="28" height="24" rx="2" fill="rgba(255,255,255,0.3)"
-                                        stroke="var(--gold-primary)" stroke-width="1" />
-                                </svg>
-                            </div>
-                            <div class="theme-name">Full Screen</div>
-                        </div>
-                        <div class="layout-card" data-layout="vertical" onclick="selectLayout('vertical')">
-                            <div class="layout-preview">
-                                <svg viewBox="0 0 100 60" fill="none">
-                                    <rect x="2" y="2" width="96" height="30" rx="3" fill="rgba(255,255,255,0.1)"
-                                        stroke="rgba(255,255,255,0.3)" stroke-width="1" />
-                                    <rect x="2" y="36" width="96" height="22" rx="3" fill="rgba(255,255,255,0.2)"
-                                        stroke="var(--gold-primary)" stroke-width="1" />
-                                </svg>
-                            </div>
-                            <div class="theme-name">Vertical</div>
-                        </div>
+                <h3
+                    style="margin: 20px 0 10px; color: var(--gold-light); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                    Daily Prayers (Jamat Times)</h3>
+                <div class="form-group">
+                    <label>Fajr Jamat (HH:MM)</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="number" id="input-fajr-h" class="form-control" min="0" max="23" placeholder="HH">
+                        <input type="number" id="input-fajr-m" class="form-control" min="0" max="59" placeholder="MM">
                     </div>
                 </div>
-
-                <!-- 4. API SETTINGS -->
-                <div id="tab-api" class="tab-content">
-                    <p style="color: var(--gold-primary); margin-bottom: 20px;">
-                        <i class="fas fa-satellite-dish"></i> Prayer Times provided by Aladhan API
-                    </p>
-                    <div class="form-group">
-                        <label>City</label>
-                        <input type="text" id="api-city" class="form-control" placeholder="London">
-                    </div>
-                    <div class="form-group">
-                        <label>Country</label>
-                        <input type="text" id="api-country" class="form-control" placeholder="UK">
-                    </div>
-                    <div class="form-group">
-                        <label>Calculation Method</label>
-                        <select id="api-method" class="form-control"
-                            style="background: rgba(255, 255, 255, 0.05); color: white;">
-                            <option value="3">Muslim World League</option>
-                            <option value="2">ISNA</option>
-                            <option value="5">Egyptian General Authority</option>
-                            <option value="4">Umm Al-Qura University, Makkah</option>
-                            <option value="1">University of Islamic Sciences, Karachi</option>
-                            <option value="12">France (UOIF)</option>
-                            <option value="13">Turkey (Diyanet)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Asr Juristic Method</label>
-                        <select id="api-school" class="form-control"
-                            style="background: rgba(255, 255, 255, 0.05); color: white;">
-                            <option value="0">Shafi (Standard)</option>
-                            <option value="1">Hanafi</option>
-                        </select>
+                <div class="form-group">
+                    <label>Dhuhr Jamat (HH:MM)</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="number" id="input-dhuhr-h" class="form-control" min="0" max="23" placeholder="HH">
+                        <input type="number" id="input-dhuhr-m" class="form-control" min="0" max="59" placeholder="MM">
                     </div>
                 </div>
-
-                <!-- SAVE BUTTON -->
-                <div
-                    style="margin-top:30px; text-align:right; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
-                    <button class="btn btn-primary" id="btn-save" style="width: 200px;" onclick="saveSettings()">
-                        <i class="fas fa-save"></i> Save Changes
-                    </button>
+                <div class="form-group">
+                    <label>Asr Jamat (HH:MM)</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="number" id="input-asr-h" class="form-control" min="0" max="23" placeholder="HH">
+                        <input type="number" id="input-asr-m" class="form-control" min="0" max="59" placeholder="MM">
+                    </div>
                 </div>
-
+                <div class="form-group">
+                    <label>Maghrib Jamat (HH:MM)</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="number" id="input-maghrib-h" class="form-control" min="0" max="23"
+                            placeholder="HH">
+                        <input type="number" id="input-maghrib-m" class="form-control" min="0" max="59"
+                            placeholder="MM">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Isha Jamat (HH:MM)</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="number" id="input-isha-h" class="form-control" min="0" max="23" placeholder="HH">
+                        <input type="number" id="input-isha-m" class="form-control" min="0" max="59" placeholder="MM">
+                    </div>
+                </div>
             </div>
+
+            <!-- 2. SLIDES -->
+            <div id="tab-slides" class="tab-content">
+
+                <div class="form-group"
+                    style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; border:1px dashed var(--gold-primary); margin-bottom: 20px;">
+                    <label style="color:var(--gold-primary); margin-bottom: 10px;"><i
+                            class="fas fa-cloud-upload-alt"></i> Upload New Slide (Image File)</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="file" id="input-slide-file" class="form-control" accept="image/*">
+                        <button class="btn btn-primary" id="btn-upload" onclick="uploadSlideFile()">Upload</button>
+                    </div>
+                    <small style="color: #aaa; margin-top:5px; display:block;">Supported: JPG, PNG, GIF</small>
+                </div>
+
+                <div
+                    style="text-align:center; margin:15px 0; color:var(--text-muted); position:relative; margin-bottom: 20px;">
+                    <span
+                        style="background: rgb(20,20,20); padding:0 10px; position:relative; z-index:1; font-size: 0.85rem;">OR
+                        ADD VIA LINK</span>
+                    <div
+                        style="position:absolute; top:50%; left:0; width:100%; height:1px; background:rgba(255,255,255,0.1); z-index:0;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Add Slide via URL</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="input-slide-url" class="form-control"
+                            placeholder="https://example.com/image.jpg">
+                        <button class="btn btn-primary" onclick="addNewSlide()">Add</button>
+                    </div>
+                </div>
+
+                <label style="margin-top:20px;">Active Slides</label>
+                <ul id="admin-slide-list" class="slide-list">
+                    <!-- Populated by JS -->
+                </ul>
+            </div>
+
+            <!-- 3. APPEARANCE -->
+            <div id="tab-appearance" class="tab-content">
+                <label>Color Scheme</label>
+                <div class="theme-grid">
+                    <div class="theme-card" data-theme="gold" onclick="selectTheme('gold')">
+                        <div class="theme-preview">
+                            <div class="theme-preview-bar"
+                                style="background: linear-gradient(135deg, #0f1316 0%, #1a1a1a 30%, #d4af37 50%, #f3e5ab 70%, #aa8c2c 100%);">
+                            </div>
+                        </div>
+                        <div class="theme-name">Gold Classic</div>
+                    </div>
+                    <div class="theme-card" data-theme="emerald" onclick="selectTheme('emerald')">
+                        <div class="theme-preview">
+                            <div class="theme-preview-bar"
+                                style="background: linear-gradient(135deg, #0a1612 0%, #0d1f19 30%, #10b981 50%, #6ee7b7 70%, #047857 100%);">
+                            </div>
+                        </div>
+                        <div class="theme-name">Emerald Oasis</div>
+                    </div>
+                    <div class="theme-card" data-theme="royal" onclick="selectTheme('royal')">
+                        <div class="theme-preview">
+                            <div class="theme-preview-bar"
+                                style="background: linear-gradient(135deg, #0c0f1a 0%, #131830 30%, #3b82f6 50%, #93c5fd 70%, #1d4ed8 100%);">
+                            </div>
+                        </div>
+                        <div class="theme-name">Royal Night</div>
+                    </div>
+                    <div class="theme-card" data-theme="rose" onclick="selectTheme('rose')">
+                        <div class="theme-preview">
+                            <div class="theme-preview-bar"
+                                style="background: linear-gradient(135deg, #16100f 0%, #251515 30%, #f43f5e 50%, #fda4af 70%, #be123c 100%);">
+                            </div>
+                        </div>
+                        <div class="theme-name">Rose Dawn</div>
+                    </div>
+                </div>
+
+                <label style="margin-top: 25px; display: block;">Layout Style</label>
+                <div class="theme-grid">
+                    <div class="layout-card" data-layout="classic" onclick="selectLayout('classic')">
+                        <div class="layout-preview">
+                            <svg viewBox="0 0 100 60" fill="none">
+                                <rect x="2" y="2" width="35" height="56" rx="3" fill="rgba(255,255,255,0.2)"
+                                    stroke="var(--gold-primary)" stroke-width="1" />
+                                <rect x="42" y="2" width="56" height="56" rx="3" fill="rgba(255,255,255,0.1)"
+                                    stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+                            </svg>
+                        </div>
+                        <div class="theme-name">Classic</div>
+                    </div>
+                    <div class="layout-card" data-layout="media-focus" onclick="selectLayout('media-focus')">
+                        <div class="layout-preview">
+                            <svg viewBox="0 0 100 60" fill="none">
+                                <rect x="2" y="2" width="22" height="56" rx="3" fill="rgba(255,255,255,0.2)"
+                                    stroke="var(--gold-primary)" stroke-width="1" />
+                                <rect x="28" y="2" width="70" height="56" rx="3" fill="rgba(255,255,255,0.1)"
+                                    stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+                            </svg>
+                        </div>
+                        <div class="theme-name">Media Focus</div>
+                    </div>
+                    <div class="layout-card" data-layout="fullscreen" onclick="selectLayout('fullscreen')">
+                        <div class="layout-preview">
+                            <svg viewBox="0 0 100 60" fill="none">
+                                <rect x="2" y="2" width="96" height="56" rx="3" fill="rgba(255,255,255,0.1)"
+                                    stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+                                <rect x="6" y="30" width="28" height="24" rx="2" fill="rgba(255,255,255,0.3)"
+                                    stroke="var(--gold-primary)" stroke-width="1" />
+                            </svg>
+                        </div>
+                        <div class="theme-name">Full Screen</div>
+                    </div>
+                    <div class="layout-card" data-layout="vertical" onclick="selectLayout('vertical')">
+                        <div class="layout-preview">
+                            <svg viewBox="0 0 100 60" fill="none">
+                                <rect x="2" y="2" width="96" height="30" rx="3" fill="rgba(255,255,255,0.1)"
+                                    stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+                                <rect x="2" y="36" width="96" height="22" rx="3" fill="rgba(255,255,255,0.2)"
+                                    stroke="var(--gold-primary)" stroke-width="1" />
+                            </svg>
+                        </div>
+                        <div class="theme-name">Vertical</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. API SETTINGS -->
+            <div id="tab-api" class="tab-content">
+                <p style="color: var(--gold-primary); margin-bottom: 20px;">
+                    <i class="fas fa-satellite-dish"></i> Prayer Times provided by Aladhan API
+                </p>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" id="api-city" class="form-control" placeholder="London">
+                </div>
+                <div class="form-group">
+                    <label>Country</label>
+                    <input type="text" id="api-country" class="form-control" placeholder="UK">
+                </div>
+                <div class="form-group">
+                    <label>Calculation Method</label>
+                    <select id="api-method" class="form-control"
+                        style="background: rgba(255, 255, 255, 0.05); color: white;">
+                        <option value="3">Muslim World League</option>
+                        <option value="2">ISNA</option>
+                        <option value="5">Egyptian General Authority</option>
+                        <option value="4">Umm Al-Qura University, Makkah</option>
+                        <option value="1">University of Islamic Sciences, Karachi</option>
+                        <option value="12">France (UOIF)</option>
+                        <option value="13">Turkey (Diyanet)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Asr Juristic Method</label>
+                    <select id="api-school" class="form-control"
+                        style="background: rgba(255, 255, 255, 0.05); color: white;">
+                        <option value="0">Shafi (Standard)</option>
+                        <option value="1">Hanafi</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SAVE BUTTON -->
+            <div
+                style="margin-top:30px; text-align:right; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
+                <button class="btn btn-primary" id="btn-save" style="width: 200px;" onclick="saveSettings()">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+
         </div>
+    </div>
     </div>
 
     <script>
@@ -655,6 +697,13 @@
             slides: [],
             prayerConfig: {
                 city: "Ravensthorpe", country: "UK", method: 3, school: 1
+            },
+            dailyPrayers: {
+                fajr: { h: 6, m: 0 },
+                dhuhr: { h: 13, m: 0 },
+                asr: { h: 16, m: 30 },
+                maghrib: { h: 18, m: 0 },
+                isha: { h: 20, m: 30 }
             }
         };
 
@@ -717,6 +766,7 @@
                     APP_CONFIG.theme = data.theme || DEFAULT_CONFIG.theme;
                     APP_CONFIG.layout = data.layout || DEFAULT_CONFIG.layout;
                     APP_CONFIG.prayerConfig = data.prayerConfig || DEFAULT_CONFIG.prayerConfig;
+                    APP_CONFIG.dailyPrayers = data.dailyPrayers || DEFAULT_CONFIG.dailyPrayers;
 
                     updateStatsUI();
                 }
@@ -749,6 +799,22 @@
                 document.getElementById('api-country').value = APP_CONFIG.prayerConfig.country || '';
                 document.getElementById('api-method').value = APP_CONFIG.prayerConfig.method || 3;
                 document.getElementById('api-school').value = APP_CONFIG.prayerConfig.school || 1;
+                document.getElementById('api-school').value = APP_CONFIG.prayerConfig.school || 1;
+            }
+
+            // Daily Prayers
+            if (APP_CONFIG.dailyPrayers) {
+                const dp = APP_CONFIG.dailyPrayers;
+                document.getElementById('input-fajr-h').value = dp.fajr.h;
+                document.getElementById('input-fajr-m').value = dp.fajr.m;
+                document.getElementById('input-dhuhr-h').value = dp.dhuhr.h;
+                document.getElementById('input-dhuhr-m').value = dp.dhuhr.m;
+                document.getElementById('input-asr-h').value = dp.asr.h;
+                document.getElementById('input-asr-m').value = dp.asr.m;
+                document.getElementById('input-maghrib-h').value = dp.maghrib.h;
+                document.getElementById('input-maghrib-m').value = dp.maghrib.m;
+                document.getElementById('input-isha-h').value = dp.isha.h;
+                document.getElementById('input-isha-m').value = dp.isha.m;
             }
 
             // visuals
@@ -778,11 +844,24 @@
             APP_CONFIG.prayerConfig.method = parseInt(document.getElementById('api-method').value);
             APP_CONFIG.prayerConfig.school = parseInt(document.getElementById('api-school').value);
 
+            // Update Daily Prayers
+            APP_CONFIG.dailyPrayers.fajr.h = parseInt(document.getElementById('input-fajr-h').value) || 0;
+            APP_CONFIG.dailyPrayers.fajr.m = parseInt(document.getElementById('input-fajr-m').value) || 0;
+            APP_CONFIG.dailyPrayers.dhuhr.h = parseInt(document.getElementById('input-dhuhr-h').value) || 0;
+            APP_CONFIG.dailyPrayers.dhuhr.m = parseInt(document.getElementById('input-dhuhr-m').value) || 0;
+            APP_CONFIG.dailyPrayers.asr.h = parseInt(document.getElementById('input-asr-h').value) || 0;
+            APP_CONFIG.dailyPrayers.asr.m = parseInt(document.getElementById('input-asr-m').value) || 0;
+            APP_CONFIG.dailyPrayers.maghrib.h = parseInt(document.getElementById('input-maghrib-h').value) || 0;
+            APP_CONFIG.dailyPrayers.maghrib.m = parseInt(document.getElementById('input-maghrib-m').value) || 0;
+            APP_CONFIG.dailyPrayers.isha.h = parseInt(document.getElementById('input-isha-h').value) || 0;
+            APP_CONFIG.dailyPrayers.isha.m = parseInt(document.getElementById('input-isha-m').value) || 0;
+
             db.collection("mosque_data").doc("settings").set({
                 jummah: APP_CONFIG.jummah,
                 theme: APP_CONFIG.theme,
                 layout: APP_CONFIG.layout,
-                prayerConfig: APP_CONFIG.prayerConfig
+                prayerConfig: APP_CONFIG.prayerConfig,
+                dailyPrayers: APP_CONFIG.dailyPrayers
             }, { merge: true })
                 .then(() => {
                     btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
