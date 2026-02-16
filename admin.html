@@ -113,6 +113,12 @@
             border-color: var(--gold-primary);
         }
 
+        /* Fix for select dropdowns having white background with white text on some browsers */
+        select.form-control option {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+        }
+
         .btn {
             padding: 12px 24px;
             border: none;
