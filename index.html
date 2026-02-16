@@ -271,56 +271,187 @@
             font-size: 2.2rem;
         }
 
-        /* --- DAILY PRAYERS --- */
+        /* --- DAILY PRAYERS TABLE --- */
         .daily-prayers-container {
             margin-bottom: 25px;
+            padding: 20px !important;
         }
 
-        .prayer-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .prayer-slot {
+        .prayer-table {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .prayer-header {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr;
+            padding: 0 15px 10px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .prayer-row {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr;
             align-items: center;
             background: rgba(0, 0, 0, 0.2);
-            padding: 12px 18px;
+            padding: 12px 15px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.03);
             transition: all 0.3s ease;
         }
 
-        .prayer-slot:hover {
-            background: rgba(255, 255, 255, 0.05);
+        .prayer-name {
+            font-size: 1.2rem;
+            color: var(--text-white);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .prayer-slot .label {
-            font-size: 1.1rem;
-            color: var(--text-muted);
+        .prayer-name i {
+            color: var(--gold-dark);
+            width: 20px;
+            text-align: center;
+        }
+
+        .prayer-time {
+            font-size: 1.3rem;
+            color: #ddd;
+            font-family: 'Roboto Condensed', sans-serif;
+            /* Fallback to existing if not loaded */
             font-weight: 500;
+            font-variant-numeric: tabular-nums;
         }
 
-        .prayer-slot .time {
+        .prayer-jamat {
             font-size: 1.4rem;
             color: var(--text-white);
             font-weight: 700;
+            font-variant-numeric: tabular-nums;
         }
 
-        .prayer-slot.highlight {
-            background: linear-gradient(90deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.02));
-            border: 1px solid rgba(212, 175, 55, 0.3);
+        /* Active Row Styling */
+        .prayer-row.highlight {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05));
+            /* Teal-ish default */
+            border-left: 4px solid var(--gold-primary);
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
-        .prayer-slot.highlight .label {
-            color: var(--gold-light);
-            font-weight: 600;
+        /* Theme Overrides for Highlight */
+        body[data-theme="gold"] .prayer-row.highlight {
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.2), rgba(0, 0, 0, 0));
         }
 
-        .prayer-slot.highlight .time {
+        body[data-theme="emerald"] .prayer-row.highlight {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.2), rgba(0, 0, 0, 0));
+        }
+
+        body[data-theme="royal"] .prayer-row.highlight {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2), rgba(0, 0, 0, 0));
+        }
+
+        body[data-theme="rose"] .prayer-row.highlight {
+            background: linear-gradient(90deg, rgba(244, 63, 94, 0.2), rgba(0, 0, 0, 0));
+        }
+
+        .prayer-row.highlight .prayer-name {
             color: var(--gold-primary);
+        }
+
+        .prayer-row.highlight .prayer-name i {
+            color: var(--gold-primary);
+        }
+
+        .prayer-row.highlight .prayer-jamat {
+            color: var(--gold-primary);
+            font-size: 1.5rem;
+        }
+
+        /* --- OVERLAYS --- */
+        .fullscreen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: none;
+            /* Hidden by default */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .overlay-content {
+            animation: fadeIn 0.5s ease-out;
+            width: 100%;
+        }
+
+        .overlay-label {
+            font-size: 2.5rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+        }
+
+        .overlay-prayer-name {
+            font-size: 6rem;
+            color: var(--gold-primary);
+            font-family: var(--font-arabic);
+            margin-bottom: 40px;
+            line-height: 1.2;
+        }
+
+        .overlay-timer {
+            font-size: 12rem;
+            font-weight: 900;
+            color: var(--text-white);
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+
+        .silent-icon {
+            font-size: 15rem;
+            color: #ff6b6b;
+            margin-bottom: 40px;
+            animation: pulse 2s infinite;
+        }
+
+        .silent-text {
+            font-size: 4rem;
+            color: #ff6b6b;
+            font-weight: 700;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         /* --- COUNTDOWN --- */
@@ -1068,30 +1199,54 @@
             <!-- DAILY PRAYERS SECTION -->
             <div class="glass-card daily-prayers-container">
                 <h2 class="section-title" style="font-size: 2.2rem; margin-bottom: 20px;">Daily Prayers</h2>
-                <div class="prayer-grid">
-                    <div class="prayer-slot" id="slot-fajr">
-                        <span class="label">Fajr</span>
-                        <span class="time" id="time-fajr">--:--</span>
+                <div class="prayer-table">
+                    <!-- Header -->
+                    <div class="prayer-header">
+                        <span>Prayer</span>
+                        <span>Begins</span>
+                        <span>Jamat</span>
                     </div>
-                    <div class="prayer-slot" id="slot-sunrise">
-                        <span class="label">Sunrise</span>
-                        <span class="time" id="time-sunrise">--:--</span>
+
+                    <!-- Fajr -->
+                    <div class="prayer-row" id="row-fajr">
+                        <div class="prayer-name"><i class="fas fa-moon"></i> Fajr</div>
+                        <div class="prayer-time" id="time-fajr">--:--</div>
+                        <div class="prayer-jamat" id="jamat-fajr">--:--</div>
                     </div>
-                    <div class="prayer-slot" id="slot-dhuhr">
-                        <span class="label">Dhuhr</span>
-                        <span class="time" id="time-dhuhr">--:--</span>
+
+                    <!-- Sunrise (No Jamat) -->
+                    <div class="prayer-row" id="row-sunrise" style="opacity: 0.7;">
+                        <div class="prayer-name"><i class="fas fa-sun"></i> Sunrise</div>
+                        <div class="prayer-time" id="time-sunrise">--:--</div>
+                        <div class="prayer-jamat">-</div>
                     </div>
-                    <div class="prayer-slot" id="slot-asr">
-                        <span class="label">Asr</span>
-                        <span class="time" id="time-asr">--:--</span>
+
+                    <!-- Dhuhr -->
+                    <div class="prayer-row" id="row-dhuhr">
+                        <div class="prayer-name"><i class="fas fa-sun"></i> Dhuhr</div>
+                        <div class="prayer-time" id="time-dhuhr">--:--</div>
+                        <div class="prayer-jamat" id="jamat-dhuhr">--:--</div>
                     </div>
-                    <div class="prayer-slot" id="slot-maghrib">
-                        <span class="label">Maghrib</span>
-                        <span class="time" id="time-maghrib">--:--</span>
+
+                    <!-- Asr -->
+                    <div class="prayer-row" id="row-asr">
+                        <div class="prayer-name"><i class="fas fa-cloud-sun"></i> Asr</div>
+                        <div class="prayer-time" id="time-asr">--:--</div>
+                        <div class="prayer-jamat" id="jamat-asr">--:--</div>
                     </div>
-                    <div class="prayer-slot" id="slot-isha">
-                        <span class="label">Isha</span>
-                        <span class="time" id="time-isha">--:--</span>
+
+                    <!-- Maghrib -->
+                    <div class="prayer-row" id="row-maghrib">
+                        <div class="prayer-name"><i class="fas fa-cloud-moon"></i> Maghrib</div>
+                        <div class="prayer-time" id="time-maghrib">--:--</div>
+                        <div class="prayer-jamat" id="jamat-maghrib">--:--</div>
+                    </div>
+
+                    <!-- Isha -->
+                    <div class="prayer-row" id="row-isha">
+                        <div class="prayer-name"><i class="fas fa-moon"></i> Isha</div>
+                        <div class="prayer-time" id="time-isha">--:--</div>
+                        <div class="prayer-jamat" id="jamat-isha">--:--</div>
                     </div>
                 </div>
             </div>
@@ -1144,6 +1299,24 @@
 
 
 
+
+        <!-- COUNTDOWN OVERLAY -->
+        <div id="countdown-overlay" class="fullscreen-overlay">
+            <div class="overlay-content">
+                <div class="overlay-label">The Prayer of</div>
+                <div class="overlay-prayer-name" id="overlay-prayer-name">Asr</div>
+                <div class="overlay-label">Is In</div>
+                <div class="overlay-timer" id="overlay-timer">14:59</div>
+            </div>
+        </div>
+
+        <!-- SILENT MODE OVERLAY -->
+        <div id="silent-overlay" class="fullscreen-overlay">
+            <div class="overlay-content">
+                <div class="silent-icon"><i class="fas fa-mobile-alt" style="text-decoration: line-through;"></i></div>
+                <div class="silent-text">Please Switch Phones to Silent</div>
+            </div>
+        </div>
 
         <script>
             // --- 1. FIREBASE CONFIGURATION (PRE-FILLED WITH YOUR KEYS) ---
@@ -1211,6 +1384,13 @@
                     country: "UK",
                     method: 3, // Muslim World League
                     school: 1  // Hanafi
+                },
+                dailyPrayers: {
+                    fajr: { h: 6, m: 0 },
+                    dhuhr: { h: 13, m: 0 },
+                    asr: { h: 16, m: 30 },
+                    maghrib: { h: 18, m: 0 },
+                    isha: { h: 20, m: 30 }
                 }
             };
 
@@ -1282,6 +1462,10 @@
                 fetchPrayerTimes(); // Fetch immediately
                 // Refetch prayers every hour to ensure date changes are handled
                 setInterval(fetchPrayerTimes, 60 * 60 * 1000);
+
+                // Start Countdown Loop
+                setInterval(checkPrayerCountdown, 1000);
+                checkPrayerCountdown(); // check immediately
             }
 
             // --- REALTIME DATABASE CONNECTION ---
@@ -1298,6 +1482,7 @@
                             APP_CONFIG.theme = data.theme || DEFAULT_CONFIG.theme;
                             APP_CONFIG.layout = data.layout || DEFAULT_CONFIG.layout;
                             APP_CONFIG.prayerConfig = data.prayerConfig || DEFAULT_CONFIG.prayerConfig;
+                            APP_CONFIG.dailyPrayers = data.dailyPrayers || DEFAULT_CONFIG.dailyPrayers;
 
                             updateJummahTimesDisplay();
                             updateClock();
@@ -1622,55 +1807,135 @@
             }
 
             function updateDailyPrayerDisplay(timings) {
-                // Helper to clean time string (remove timezone abbreviations if any)
+                // Helper to clean time string
                 const cleanTime = (t) => t.split(' ')[0];
 
-                document.getElementById('time-fajr').innerText = cleanTime(timings.Fajr);
-                document.getElementById('time-sunrise').innerText = cleanTime(timings.Sunrise);
-                document.getElementById('time-dhuhr').innerText = cleanTime(timings.Dhuhr);
-                document.getElementById('time-asr').innerText = cleanTime(timings.Asr);
-                document.getElementById('time-maghrib').innerText = cleanTime(timings.Maghrib);
-                document.getElementById('time-isha').innerText = cleanTime(timings.Isha);
+                const prayers = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
-                highlightCurrentPrayer(timings);
-            }
+                prayers.forEach(prayer => {
+                    const timeStr = timings[prayer.charAt(0).toUpperCase() + prayer.slice(1)]; // Title Case for API
+                    const finalTime = cleanTime(timeStr);
 
-            function highlightCurrentPrayer(timings) {
-                // Remove existing highlights
-                document.querySelectorAll('.prayer-slot').forEach(el => el.classList.remove('highlight'));
+                    // Update "Begins" Time
+                    const beginsEl = document.getElementById(`time-${prayer}`);
+                    if (beginsEl) beginsEl.innerText = finalTime;
 
+                    // Update "Jamat" Time
+                    const jamatEl = document.getElementById(`jamat-${prayer}`);
+                    if (jamatEl) {
+                        if (prayer === 'sunrise') {
+                            jamatEl.innerText = "-";
+                        } else if (APP_CONFIG.dailyPrayers && APP_CONFIG.dailyPrayers[prayer]) {
+                            const p = APP_CONFIG.dailyPrayers[prayer];
+                            const h = p.h.toString().padStart(2, '0');
+                            const m = p.m.toString().padStart(2, '0');
+                            jamatEl.innerText = `${h}:${m}`;
+                        }
+                    }
+
+                    // Reset Highlights
+                    const row = document.getElementById(`row-${prayer}`);
+                    if (row) row.classList.remove('highlight');
+                });
+
+                // Highlight Current/Next Prayer Logic
+                // We will highlight the prayer that is UP NEXT or CURRENTLY ACTIVE
                 const now = new Date();
-                const currentTime = now.getHours() * 60 + now.getMinutes();
+                const nowMin = now.getHours() * 60 + now.getMinutes();
 
-                const prayers = [
-                    { id: 'slot-fajr', time: timings.Fajr },
-                    { id: 'slot-sunrise', time: timings.Sunrise },
-                    { id: 'slot-dhuhr', time: timings.Dhuhr },
-                    { id: 'slot-asr', time: timings.Asr },
-                    { id: 'slot-maghrib', time: timings.Maghrib },
-                    { id: 'slot-isha', time: timings.Isha }
+                let activePrayer = null;
+                // Simple logic: find first prayer that hasn't passed yet? 
+                // Or find the prayer range we are currently IN?
+                // Let's highlight the one we are waiting for (Next Jamat) OR currently in.
+
+                // For now, let's stick to the "Next Prayer" logic provided previously
+                // ... (Logic from previous snippet adapted for table rows)
+                const prayerObjs = [
+                    { id: 'row-fajr', time: timings.Fajr },
+                    { id: 'row-sunrise', time: timings.Sunrise },
+                    { id: 'row-dhuhr', time: timings.Dhuhr },
+                    { id: 'row-asr', time: timings.Asr },
+                    { id: 'row-maghrib', time: timings.Maghrib },
+                    { id: 'row-isha', time: timings.Isha }
                 ];
 
-                let nextPrayerId = null;
+                let nextRowId = 'row-fajr'; // default next day Fajr
 
-                for (let i = 0; i < prayers.length; i++) {
-                    const [h, m] = prayers[i].time.split(':').map(Number);
+                for (let i = 0; i < prayerObjs.length; i++) {
+                    const [h, m] = prayerObjs[i].time.split(':').map(Number);
                     const pTime = h * 60 + m;
-
-                    if (currentTime < pTime) {
-                        nextPrayerId = prayers[i].id;
+                    if (nowMin < pTime) {
+                        nextRowId = prayerObjs[i].id;
                         break;
                     }
                 }
 
-                // If no next prayer found today, it means next is Fajr tomorrow
-                if (!nextPrayerId) {
-                    nextPrayerId = 'slot-fajr';
-                }
+                const row = document.getElementById(nextRowId);
+                if (row) row.classList.add('highlight');
+            }
 
-                if (nextPrayerId) {
-                    const el = document.getElementById(nextPrayerId);
-                    if (el) el.classList.add('highlight');
+            // --- COUNTDOWN LOGIC ---
+            function checkPrayerCountdown() {
+                if (!APP_CONFIG.dailyPrayers) return;
+
+                const now = new Date();
+                const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+                // Check each prayer Jamat
+                const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+                let activeCountdown = null;
+                let activeSilent = null;
+
+                prayers.forEach(p => {
+                    if (!APP_CONFIG.dailyPrayers[p]) return;
+
+                    const cfg = APP_CONFIG.dailyPrayers[p];
+                    const jamatSec = cfg.h * 3600 + cfg.m * 60;
+
+                    const diff = jamatSec - nowSec;
+
+                    // TRIGGER: 15 mins (900s) before Jamat
+                    if (diff > 0 && diff <= 900) {
+                        activeCountdown = { prayer: p, diff: diff };
+                    }
+
+                    // SILENT: 0 to 5 mins (300s) AFTER Jamat (i.e. diff is negative)
+                    if (diff <= 0 && diff >= -300) {
+                        activeSilent = true;
+                    }
+                });
+
+                const countdownOverlay = document.getElementById('countdown-overlay');
+                const silentOverlay = document.getElementById('silent-overlay');
+                const slideshowContainer = document.getElementById('slideshow-container');
+                const overlayTimer = document.getElementById('overlay-timer');
+                const overlayName = document.getElementById('overlay-prayer-name');
+
+                if (activeSilent) {
+                    // Show Silent
+                    silentOverlay.style.display = 'flex';
+                    countdownOverlay.style.display = 'none';
+                    slideshowContainer.style.opacity = '0';
+                }
+                else if (activeCountdown) {
+                    // Show Countdown
+                    silentOverlay.style.display = 'none';
+                    countdownOverlay.style.display = 'flex';
+                    slideshowContainer.style.opacity = '0';
+
+                    // Update Timer
+                    const m = Math.floor(activeCountdown.diff / 60).toString().padStart(2, '0');
+                    const s = (activeCountdown.diff % 60).toString().padStart(2, '0');
+                    overlayTimer.innerText = `${m}:${s}`;
+
+                    // Capitalize first letter
+                    overlayName.innerText = activeCountdown.prayer.charAt(0).toUpperCase() + activeCountdown.prayer.slice(1);
+                }
+                else {
+                    // Show Slideshow
+                    silentOverlay.style.display = 'none';
+                    countdownOverlay.style.display = 'none';
+                    slideshowContainer.style.opacity = '1';
                 }
             }
 
