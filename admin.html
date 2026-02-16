@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faizan-E-Madinah Admin</title>
+    <title>Faizan-E-Madinah Display</title>
 
     <link
         href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;500;700;900&display=swap"
@@ -14,7 +14,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
     <style>
         /* --- CSS VARIABLES & RESET --- */
@@ -31,6 +30,52 @@
             --font-arabic: 'Amiri', serif;
         }
 
+        /* --- THEME DEFINITIONS (with backgrounds) --- */
+        body[data-theme="gold"],
+        body:not([data-theme]) {
+            --bg-dark: #0f1316;
+            --gold-primary: #d4af37;
+            --gold-light: #f3e5ab;
+            --gold-dark: #aa8c2c;
+            --theme-gradient: radial-gradient(circle at 100% 0%, rgba(212, 175, 55, 0.12) 0%, transparent 35%),
+                radial-gradient(circle at 0% 100%, rgba(212, 175, 55, 0.08) 0%, transparent 35%),
+                repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 1px, transparent 1px, transparent 12px),
+                linear-gradient(145deg, #0f1316 0%, #080a0c 100%);
+        }
+
+        body[data-theme="emerald"] {
+            --bg-dark: #0a1612;
+            --gold-primary: #10b981;
+            --gold-light: #6ee7b7;
+            --gold-dark: #047857;
+            --theme-gradient: radial-gradient(ellipse at 0% 0%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 100%, rgba(6, 95, 70, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 70%),
+                linear-gradient(160deg, #0a1612 0%, #051510 50%, #021a12 100%);
+        }
+
+        body[data-theme="royal"] {
+            --bg-dark: #0c0f1a;
+            --gold-primary: #3b82f6;
+            --gold-light: #93c5fd;
+            --gold-dark: #1d4ed8;
+            --theme-gradient: radial-gradient(ellipse at 20% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 45%),
+                radial-gradient(ellipse at 80% 100%, rgba(99, 102, 241, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 90% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 30%),
+                linear-gradient(155deg, #0c0f1a 0%, #0a0d18 50%, #080b14 100%);
+        }
+
+        body[data-theme="rose"] {
+            --bg-dark: #16100f;
+            --gold-primary: #f43f5e;
+            --gold-light: #fda4af;
+            --gold-dark: #be123c;
+            --theme-gradient: radial-gradient(ellipse at 100% 0%, rgba(244, 63, 94, 0.12) 0%, transparent 45%),
+                radial-gradient(ellipse at 0% 100%, rgba(190, 18, 60, 0.1) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(251, 113, 133, 0.04) 0%, transparent 60%),
+                linear-gradient(150deg, #16100f 0%, #120d0c 50%, #0f0a09 100%);
+        }
+
         * {
             box-sizing: border-box;
         }
@@ -39,169 +84,501 @@
             margin: 0;
             padding: 0;
             background-color: var(--bg-dark);
-            background: linear-gradient(145deg, #0f1316 0%, #080a0c 100%);
+            background-image: var(--theme-gradient);
             color: var(--text-white);
             font-family: var(--font-main);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .admin-container {
-            width: 800px;
-            max-width: 95%;
-            background: linear-gradient(145deg, rgba(30, 30, 30, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%);
-            border: 1px solid var(--gold-primary);
-            border-radius: 20px;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            height: auto;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            height: 90vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, background-image 0.5s ease;
         }
 
-        .admin-header {
-            padding: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        /* --- HEADER --- */
+        header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0, 0, 0, 0.3);
+            padding: 20px 40px;
+            background: rgba(15, 19, 22, 0.6);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
+            z-index: 10;
         }
 
-        .admin-header h2 {
+        .mosque-brand {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mosque-brand h1 {
             margin: 0;
+            font-family: var(--font-arabic);
+            font-size: 3rem;
+            background: linear-gradient(to bottom, var(--gold-light) 0%, var(--gold-primary) 50%, var(--gold-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+        }
+
+        .mosque-brand span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-top: -5px;
+            padding-left: 4px;
+            opacity: 0.8;
+        }
+
+        .clock-widget {
+            text-align: right;
+        }
+
+        .clock-time {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--text-white);
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            letter-spacing: -2px;
+        }
+
+        .clock-date {
+            font-size: 1.2rem;
+            color: var(--gold-primary);
+            margin-top: 5px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- MAIN LAYOUT --- */
+        .main-content {
+            display: flex;
+            flex: 1;
+            padding: 30px;
+            gap: 40px;
+            height: 100%;
+        }
+
+        /* --- LEFT PANEL --- */
+        .schedule-panel {
+            flex: 0 0 40%;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .glass-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: var(--glass-border);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .jummah-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .section-title {
+            font-family: var(--font-arabic);
+            font-size: 3.2rem;
+            background: linear-gradient(to right, var(--gold-light), var(--gold-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin: 0 0 30px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 20px;
+        }
+
+        .timing-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .time-slot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 18px 25px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: transform 0.2s ease;
+        }
+
+        .time-slot i {
+            width: 30px;
+            color: var(--gold-dark);
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+
+        .slot-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .time-slot.highlight {
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.05));
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.1);
+            transform: scale(1.02);
+        }
+
+        .label {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .time {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-white);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .highlight .label {
+            color: var(--gold-light);
+            font-weight: 600;
+        }
+
+        .highlight i {
+            color: var(--gold-primary);
+        }
+
+        .highlight .time {
+            color: var(--gold-primary);
+            font-size: 2.2rem;
+        }
+
+        /* --- DAILY PRAYERS TABLE --- */
+        .daily-prayers-container {
+            margin-bottom: 25px;
+            padding: 20px !important;
+        }
+
+        .prayer-table {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .prayer-header {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr;
+            padding: 0 15px 10px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .prayer-row {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        .prayer-name {
+            font-size: 1.2rem;
+            color: var(--text-white);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .prayer-name i {
+            color: var(--gold-dark);
+            width: 20px;
+            text-align: center;
+        }
+
+        .prayer-time {
+            font-size: 1.3rem;
+            color: #ddd;
+            font-family: 'Roboto Condensed', sans-serif;
+            /* Fallback to existing if not loaded */
+            font-weight: 500;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .prayer-jamat {
+            font-size: 1.4rem;
+            color: var(--text-white);
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Active Row Styling */
+        .prayer-row.highlight {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05));
+            /* Teal-ish default */
+            border-left: 4px solid var(--gold-primary);
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Theme Overrides for Highlight */
+        body[data-theme="gold"] .prayer-row.highlight {
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.2), rgba(0, 0, 0, 0));
+        }
+
+        body[data-theme="emerald"] .prayer-row.highlight {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.2), rgba(0, 0, 0, 0));
+        }
+
+        body[data-theme="royal"] .prayer-row.highlight {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2), rgba(0, 0, 0, 0));
+        }
+
+        body[data-theme="rose"] .prayer-row.highlight {
+            background: linear-gradient(90deg, rgba(244, 63, 94, 0.2), rgba(0, 0, 0, 0));
+        }
+
+        .prayer-row.highlight .prayer-name {
+            color: var(--gold-primary);
+        }
+
+        .prayer-row.highlight .prayer-name i {
+            color: var(--gold-primary);
+        }
+
+        .prayer-row.highlight .prayer-jamat {
             color: var(--gold-primary);
             font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
-        .admin-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 30px;
-        }
-
-        /* Forms */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        .form-control {
+        /* --- OVERLAYS --- */
+        .fullscreen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: var(--text-white);
-            font-family: var(--font-main);
-            font-size: 1rem;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--gold-primary);
-        }
-
-        /* Fix for select dropdowns having white background with white text on some browsers */
-        select.form-control option {
-            background-color: var(--bg-dark);
-            color: var(--text-white);
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: var(--font-main);
-            display: inline-flex;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: none;
+            /* Hidden by default */
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            text-align: center;
         }
 
-        .btn-primary {
-            background: var(--gold-primary);
-            color: #000;
+        .overlay-content {
+            animation: fadeIn 0.5s ease-out;
+            width: 100%;
         }
 
-        .btn-primary:hover {
-            background: var(--gold-light);
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: rgba(255, 107, 107, 0.2);
-            color: #ff6b6b;
-            padding: 8px 16px;
-            font-size: 0.9rem;
-        }
-
-        .btn-danger:hover {
-            background: rgba(255, 107, 107, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-white);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 10px;
-            overflow-x: auto;
-        }
-
-        .tab-btn {
-            padding: 10px 20px;
-            background: none;
-            border: none;
+        .overlay-label {
+            font-size: 2.5rem;
             color: var(--text-muted);
-            font-size: 1rem;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
         }
 
-        .tab-btn.active {
+        .overlay-prayer-name {
+            font-size: 6rem;
             color: var(--gold-primary);
-            border-bottom-color: var(--gold-primary);
+            font-family: var(--font-arabic);
+            margin-bottom: 40px;
+            line-height: 1.2;
         }
 
-        .tab-content {
+        .overlay-timer {
+            font-size: 12rem;
+            font-weight: 900;
+            color: var(--text-white);
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+
+        .silent-icon {
+            font-size: 15rem;
+            color: #ff6b6b;
+            margin-bottom: 40px;
+            animation: pulse 2s infinite;
+        }
+
+        .silent-text {
+            font-size: 4rem;
+            color: #ff6b6b;
+            font-weight: 700;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* --- COUNTDOWN --- */
+        #countdown-container {
             display: none;
+            border: 1px solid var(--gold-primary);
+            background: rgba(212, 175, 55, 0.05);
+            text-align: center;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 25%;
         }
 
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
+        .countdown-header {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--gold-primary);
+            margin-bottom: 5px;
         }
 
-        @keyframes fadeIn {
+        .countdown-timer {
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: var(--text-white);
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            transition: font-size 0.3s ease;
+        }
+
+        /* --- RIGHT PANEL: SLIDESHOW --- */
+        .media-panel {
+            flex: 1;
+            background: #000;
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--shadow-soft);
+            border: var(--glass-border);
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            overflow: hidden;
+            background-color: #000;
+            will-change: opacity;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        .slide-bg {
+            position: absolute;
+            top: -5%;
+            left: -5%;
+            right: -5%;
+            bottom: -5%;
+            background-size: cover;
+            background-position: center;
+            filter: blur(40px) brightness(0.4);
+            z-index: 1;
+        }
+
+        .slide-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 2;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.8));
+            transform: scale(1);
+            will-change: transform;
+        }
+
+        /* Ken Burns Animation */
+        @media (prefers-reduced-motion: no-preference) {
+            .slide.active .slide-content {
+                animation: kenBurns 15s ease-out forwards;
+            }
+        }
+
+        @keyframes kenBurns {
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(1.05);
+            }
+        }
+
+        .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.4) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+        }
+
+        .slide-text {
+            text-align: center;
+            padding: 40px;
+            animation: fadeInUp 1s ease-out .5s both;
+        }
+
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(20px);
             }
 
             to {
@@ -210,70 +587,208 @@
             }
         }
 
-        /* Slide List */
-        .slide-list {
-            list-style: none;
-            padding: 0;
+        .slide-text h2 {
+            font-family: var(--font-arabic);
+            font-size: 5rem;
+            color: var(--gold-primary);
+            margin: 0 0 15px 0;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+        }
+
+        .slide-text p {
+            font-size: 1.8rem;
+            color: #e0e0e0;
             margin: 0;
-            display: flex;
+            font-weight: 300;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
+            letter-spacing: 1px;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 6px;
+            background: var(--gold-primary);
+            width: 0%;
+            z-index: 10;
+            transition: width 0.1s linear;
+            will-change: width;
+        }
+
+        #loading-message {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #aaa;
+            font-family: monospace;
+            font-size: 0.8rem;
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        /* --- LAYOUT DEFINITIONS --- */
+        /* Classic Layout (Default - 40/60 split) */
+        body[data-layout="classic"] .schedule-panel,
+        body:not([data-layout]) .schedule-panel {
+            flex: 0 0 40%;
+        }
+
+        /* Media Focus Layout (25/75 split) */
+        body[data-layout="media-focus"] .schedule-panel {
+            flex: 0 0 25%;
+        }
+
+        body[data-layout="media-focus"] .section-title {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+        }
+
+        body[data-layout="media-focus"] .time-slot {
+            padding: 12px 18px;
+        }
+
+        body[data-layout="media-focus"] .label {
+            font-size: 1rem;
+        }
+
+        body[data-layout="media-focus"] .time {
+            font-size: 1.4rem;
+        }
+
+        body[data-layout="media-focus"] .countdown-timer {
+            font-size: 3rem;
+        }
+
+        /* Fullscreen Layout (Schedule overlays media) */
+        body[data-layout="fullscreen"] .main-content {
+            position: relative;
+            padding: 0;
+            gap: 0;
+        }
+
+        body[data-layout="fullscreen"] .media-panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 0;
+            z-index: 1;
+        }
+
+        body[data-layout="fullscreen"] .schedule-panel {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            width: 380px;
+            max-height: calc(100% - 60px);
+            z-index: 10;
+            flex: none;
+            background: rgba(15, 19, 22, 0.85);
+            border-radius: 24px;
+            padding: 20px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+        }
+
+        body[data-layout="fullscreen"] .schedule-panel .glass-card {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            padding: 10px 0;
+            border-radius: 0;
+        }
+
+        body[data-layout="fullscreen"] .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+        }
+
+        body[data-layout="fullscreen"] .time-slot {
+            padding: 10px 12px;
+            border-radius: 10px;
+        }
+
+        body[data-layout="fullscreen"] .label {
+            font-size: 0.95rem;
+        }
+
+        body[data-layout="fullscreen"] .time {
+            font-size: 1.3rem;
+        }
+
+        body[data-layout="fullscreen"] #countdown-container {
+            min-height: auto;
+            padding: 15px;
+        }
+
+        body[data-layout="fullscreen"] .countdown-timer {
+            font-size: 2.5rem;
+        }
+
+        /* Vertical Layout (Stacked - for portrait displays) */
+        body[data-layout="vertical"] .main-content {
             flex-direction: column;
+            gap: 20px;
+        }
+
+        body[data-layout="vertical"] .schedule-panel {
+            flex: none;
+            order: 2;
+        }
+
+        body[data-layout="vertical"] .media-panel {
+            flex: none;
+            height: 50vh;
+            order: 1;
+        }
+
+        body[data-layout="vertical"] .timing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
 
-        .slide-item {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            gap: 15px;
+        body[data-layout="vertical"] .time-slot {
+            flex-direction: column;
+            text-align: center;
+            padding: 15px 10px;
         }
 
-        .slide-thumb {
-            width: 80px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 4px;
+        body[data-layout="vertical"] .time-slot i {
+            margin-right: 0;
+            margin-bottom: 8px;
         }
 
-        .slide-url {
-            flex: 1;
-            font-size: 0.9rem;
-            color: #ddd;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+        body[data-layout="vertical"] .slot-info {
+            flex-direction: column;
         }
 
-        .slide-actions {
-            display: flex;
-            gap: 8px;
+        body[data-layout="vertical"] #countdown-container {
+            min-height: auto;
+            padding: 20px;
         }
 
-        .icon-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
 
-        .icon-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--gold-primary);
-        }
 
-        .hidden-slide {
-            opacity: 0.5;
-        }
 
-        /* Theme Grid */
+
+
+
+
+
+        /* Theme Cards */
         .theme-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             margin-top: 15px;
         }
@@ -290,11 +805,12 @@
 
         .theme-card:hover {
             border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
 
         .theme-card.selected {
             border-color: var(--gold-primary);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
         }
 
         .theme-card.selected::after {
@@ -304,19 +820,19 @@
             right: 10px;
             background: var(--gold-primary);
             color: #000;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 14px;
         }
 
         .theme-preview {
-            height: 50px;
-            border-radius: 6px;
+            height: 60px;
+            border-radius: 8px;
             margin-bottom: 10px;
             position: relative;
             overflow: hidden;
@@ -330,16 +846,56 @@
         }
 
         .theme-name {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-white);
             text-align: center;
         }
 
-        .layout-preview {
-            height: 50px;
+        /* Layout Cards */
+        .layout-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .layout-card:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .layout-card.selected {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .layout-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--gold-primary);
+            color: #000;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .layout-preview {
+            height: 60px;
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .layout-preview svg {
@@ -347,720 +903,1050 @@
             height: 100%;
         }
 
-        /* Login */
-        .login-wrap {
-            max-width: 400px;
-            margin: 0 auto;
-            text-align: center;
-            padding-top: 40px;
+        /* Mobile Responsive Styles - Admin Panel */
+        @media (max-width: 768px) {
+
+            /* Larger touch targets for mobile */
+            .icon-btn {
+                padding: 10px;
+                font-size: 1.1rem;
+            }
+
+            .btn {
+                padding: 14px 20px;
+                font-size: 1rem;
+                min-height: 48px;
+                /* iOS minimum touch target */
+            }
+
+            /* Modal adjustments for mobile */
+            .modal-content {
+                width: 95%;
+                max-width: 95%;
+                max-height: 95vh;
+                border-radius: 12px;
+            }
+
+            .modal-header {
+                padding: 15px;
+            }
+
+            .modal-header h2 {
+                font-size: 1.2rem;
+            }
+
+            .modal-body {
+                padding: 15px;
+            }
+
+            /* Form inputs - larger for easier typing */
+            .form-control {
+                padding: 14px;
+                font-size: 16px;
+                /* Prevents iOS zoom on focus */
+                min-height: 48px;
+            }
+
+            /* Tabs - make them stack on very small screens */
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                padding: 12px 16px;
+                font-size: 0.95rem;
+                flex: 1;
+                min-width: 120px;
+            }
+
+            /* Slide list items - consolidated styles */
+            .slide-item {
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                padding: 12px;
+                gap: 10px;
+            }
+
+            .slide-thumb {
+                width: 50px;
+                height: 50px;
+                flex-shrink: 0;
+            }
+
+            .slide-url {
+                flex: 1;
+                font-size: 0.9rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 150px;
+            }
+
+            .slide-actions {
+                display: flex;
+                gap: 8px;
+            }
+
+            .slide-actions button,
+            .slide-actions input[type="checkbox"] {
+                transform: scale(1.3);
+            }
+
+            /* Form group spacing */
+            .form-group {
+                margin-bottom: 18px;
+            }
+
+            .form-group label {
+                font-size: 1rem;
+                margin-bottom: 10px;
+            }
+
+            /* Stack time inputs vertically */
+            .form-group div[style*="flex"] {
+                flex-direction: column !important;
+                gap: 5px !important;
+            }
+
+            .form-group div[style*="flex"] input {
+                width: 100% !important;
+            }
+
+            /* Separator fix */
+            span[style*="background: rgb(20,20,20)"] {
+                font-size: 0.8rem;
+                padding: 0 5px;
+            }
+
+            /* Admin trigger - slightly larger on mobile */
+            #admin-trigger {
+                width: 60px;
+                height: 60px;
+            }
+
+            /* Close button - larger touch target */
+            .close-btn {
+                padding: 8px;
+                font-size: 1.8rem;
+            }
         }
 
-        .login-icon {
-            font-size: 3rem;
-            color: var(--gold-primary);
-            margin-bottom: 20px;
+        /* Extra small phones */
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 98%;
+                max-width: 98%;
+                border-radius: 8px;
+            }
+
+            .modal-header h2 {
+                font-size: 1.1rem;
+            }
+
+            .tab-btn {
+                font-size: 0.85rem;
+                padding: 10px 12px;
+            }
+
+            .slide-thumb {
+                width: 60px;
+                height: 45px;
+            }
+        }
+
+        /* Responsive adjustments for MAIN DISPLAY */
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-direction: column;
+                padding: 15px;
+                /* Reduce padding */
+                gap: 20px;
+            }
+
+            .schedule-panel {
+                flex: 0 0 auto;
+                width: 100%;
+                /* Full width */
+            }
+
+            .media-panel {
+                min-height: 40vh;
+                /* Ensure slideshow has height */
+            }
+        }
+
+        /* Tablet & Mobile Screens */
+        @media (max-width: 768px) {
+
+            /* Header Adjustments */
+            header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .mosque-brand h1 {
+                font-size: 2rem;
+            }
+
+            .clock-widget {
+                text-align: center;
+            }
+
+            .clock-time {
+                font-size: 2.5rem;
+            }
+
+            .clock-date {
+                font-size: 1rem;
+            }
+
+            /* Schedule Panel Adjustments */
+            .glass-card {
+                padding: 20px;
+                border-radius: 20px;
+            }
+
+            .section-title {
+                font-size: 2rem;
+                margin-bottom: 20px;
+            }
+
+            .time-slot {
+                padding: 12px 15px;
+            }
+
+            .label {
+                font-size: 1rem;
+            }
+
+            .time {
+                font-size: 1.4rem;
+            }
+
+            /* Slideshow Adjustments */
+            .media-panel {
+                min-height: 300px;
+                /* Fixed minimum height for mobile */
+            }
+
+            .slide-text h2 {
+                font-size: 3rem;
+            }
+
+            .slide-text p {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Small Mobile Adjustments */
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 10px;
+            }
+
+            .mosque-brand h1 {
+                font-size: 1.8rem;
+            }
+
+            .clock-time {
+                font-size: 2rem;
+            }
+
+            .time-slot {
+                flex-direction: column;
+                gap: 5px;
+                text-align: center;
+            }
+
+            .slot-info {
+                justify-content: center;
+            }
+
+            .time-slot i {
+                margin-right: 8px;
+            }
+
+            .time {
+                font-size: 1.6rem;
+            }
+
+            .highlight .time {
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <div class="admin-container">
+    <header>
+        <div class="mosque-brand">
+            <h1>Faizan-E-Madinah</h1>
+            <span>Ravensthorpe</span>
+        </div>
+        <div class="clock-widget">
+            <div class="clock-time" id="clock-time">00:00</div>
+            <div class="clock-date" id="clock-date">Monday, 1 January</div>
+        </div>
+    </header>
 
-        <!-- HEADER -->
-        <div class="admin-header">
-            <h2><i class="fas fa-cog"></i> Display Settings</h2>
-            <div id="auth-controls" style="display:none;">
-                <span id="user-email" style="font-size: 0.9rem; margin-right: 15px; color: var(--text-muted);"></span>
-                <button class="btn btn-secondary" style="padding: 8px 15px; font-size: 0.9rem;"
-                    onclick="logout()">Logout</button>
+    <div class="main-content">
+
+        <div class="schedule-panel">
+            <!-- DAILY PRAYERS SECTION -->
+            <div class="glass-card daily-prayers-container">
+                <h2 class="section-title" style="font-size: 2.2rem; margin-bottom: 20px;">Daily Prayers</h2>
+                <div class="prayer-table">
+                    <!-- Header -->
+                    <div class="prayer-header">
+                        <span>Prayer</span>
+                        <span>Begins</span>
+                        <span>Jamat</span>
+                    </div>
+
+                    <!-- Fajr -->
+                    <div class="prayer-row" id="row-fajr">
+                        <div class="prayer-name"><i class="fas fa-moon"></i> Fajr</div>
+                        <div class="prayer-time" id="time-fajr">--:--</div>
+                        <div class="prayer-jamat" id="jamat-fajr">--:--</div>
+                    </div>
+
+                    <!-- Sunrise (No Jamat) -->
+                    <div class="prayer-row" id="row-sunrise" style="opacity: 0.7;">
+                        <div class="prayer-name"><i class="fas fa-sun"></i> Sunrise</div>
+                        <div class="prayer-time" id="time-sunrise">--:--</div>
+                        <div class="prayer-jamat">-</div>
+                    </div>
+
+                    <!-- Dhuhr -->
+                    <div class="prayer-row" id="row-dhuhr">
+                        <div class="prayer-name"><i class="fas fa-sun"></i> Dhuhr</div>
+                        <div class="prayer-time" id="time-dhuhr">--:--</div>
+                        <div class="prayer-jamat" id="jamat-dhuhr">--:--</div>
+                    </div>
+
+                    <!-- Asr -->
+                    <div class="prayer-row" id="row-asr">
+                        <div class="prayer-name"><i class="fas fa-cloud-sun"></i> Asr</div>
+                        <div class="prayer-time" id="time-asr">--:--</div>
+                        <div class="prayer-jamat" id="jamat-asr">--:--</div>
+                    </div>
+
+                    <!-- Maghrib -->
+                    <div class="prayer-row" id="row-maghrib">
+                        <div class="prayer-name"><i class="fas fa-cloud-moon"></i> Maghrib</div>
+                        <div class="prayer-time" id="time-maghrib">--:--</div>
+                        <div class="prayer-jamat" id="jamat-maghrib">--:--</div>
+                    </div>
+
+                    <!-- Isha -->
+                    <div class="prayer-row" id="row-isha">
+                        <div class="prayer-name"><i class="fas fa-moon"></i> Isha</div>
+                        <div class="prayer-time" id="time-isha">--:--</div>
+                        <div class="prayer-jamat" id="jamat-isha">--:--</div>
+                    </div>
+                </div>
             </div>
-            <a href="index.html" class="btn btn-secondary" target="_blank"
-                style="padding: 8px 15px; font-size: 0.9rem; text-decoration: none;">
-                <i class="fas fa-external-link-alt"></i> Open Display
-            </a>
+
+            <div class="glass-card jummah-container">
+                <h2 class="section-title">Jummah</h2>
+                <div class="timing-grid">
+                    <div class="time-slot highlight">
+                        <div class="slot-info">
+                            <i class="fas fa-users"></i> <span class="label">Jummah Jamaat</span>
+                        </div>
+                        <span class="time" id="jamaat-time">--:--</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- BODY -->
-        <div class="admin-body">
+        <div class="media-panel" id="slideshow-container">
+            <div class="progress-bar" id="slide-progress"></div>
+            <div id="loading-message">Connecting to Cloud System...</div>
 
-            <!-- LOGIN VIEW -->
-            <div id="login-view">
-                <div class="login-wrap">
-                    <div class="login-icon"><i class="fas fa-lock"></i></div>
-                    <h3>Secure Login</h3>
-                    <div class="form-group">
-                        <input type="email" id="admin-email" class="form-control" placeholder="Email Address">
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id="admin-password" class="form-control" placeholder="Password">
-                    </div>
-                    <button class="btn btn-primary" style="width:100%" onclick="loginAdmin()">Login</button>
-                    <p id="login-error" style="color: #ff6b6b; margin-top: 15px; display: none;"></p>
-                </div>
-            </div>
-
-            <!-- SETTINGS VIEW -->
-            <div id="settings-view" style="display:none;">
-                <div class="tabs">
-                    <button class="tab-btn active" onclick="switchTab('timings')">Timings</button>
-                    <button class="tab-btn" onclick="switchTab('slides')">Slides</button>
-                    <button class="tab-btn" onclick="switchTab('appearance')">Appearance</button>
-                    <button class="tab-btn" onclick="switchTab('api')">API Settings</button>
-                </div>
-
-                <!-- 1. TIMINGS -->
-                <div id="tab-timings" class="tab-content active">
-                    <div class="form-group">
-                        <label>Speech Time (HH:MM - 24h format)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="number" id="input-speech-h" class="form-control" min="0" max="23"
-                                placeholder="HH">
-                            <input type="number" id="input-speech-m" class="form-control" min="0" max="59"
-                                placeholder="MM">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Khutbah Starts Time (HH:MM - 24h format)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="number" id="input-khutbah-h" class="form-control" min="0" max="23"
-                                placeholder="HH">
-                            <input type="number" id="input-khutbah-m" class="form-control" min="0" max="59"
-                                placeholder="MM">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Jummah Jamaat Time (HH:MM - 24h format)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="number" id="input-jamaat-h" class="form-control" min="0" max="23"
-                                placeholder="HH">
-                            <input type="number" id="input-jamaat-m" class="form-control" min="0" max="59"
-                                placeholder="MM">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Countdown Start Time (Friday HH:MM)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="number" id="input-start-h" class="form-control" min="0" max="23"
-                                placeholder="HH">
-                            <input type="number" id="input-start-m" class="form-control" min="0" max="59"
-                                placeholder="MM">
-                        </div>
-                    </div>
-
-
-                    <h3
-                        style="margin: 20px 0 10px; color: var(--gold-light); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-                        Daily Prayers (Jamat Times)</h3>
-                    <div class="form-group">
-                        <label>Fajr Jamat (HH:MM)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="number" id="input-fajr-h" class="form-control" min="0" max="23"
-                                placeholder="HH">
-                            <input type="number" id="input-fajr-m" class="form-control" min="0" max="59"
-                                placeholder="MM">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Dhuhr Jamat (HH:MM)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="number" id="input-dhuhr-h" class="form-control" min="0" max="23"
-                                placeholder="HH">
-                            <input type="number" id="input-dhuhr-m" class="form-control" min="0" max="59"
-                                placeholder="MM">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Asr Jamat (HH:MM)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="number" id="input-asr-h" class="form-control" min="0" max="23"
-                                placeholder="HH">
-                            <input type="number" id="input-asr-m" class="form-control" min="0" max="59"
-                                placeholder="MM">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Maghrib Jamat (HH:MM)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="number" id="input-maghrib-h" class="form-control" min="0" max="23"
-                                placeholder="HH">
-                            <input type="number" id="input-maghrib-m" class="form-control" min="0" max="59"
-                                placeholder="MM">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Isha Jamat (HH:MM)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="number" id="input-isha-h" class="form-control" min="0" max="23"
-                                placeholder="HH">
-                            <input type="number" id="input-isha-m" class="form-control" min="0" max="59"
-                                placeholder="MM">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. SLIDES -->
-                <div id="tab-slides" class="tab-content">
-
-                    <div class="form-group"
-                        style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; border:1px dashed var(--gold-primary); margin-bottom: 20px;">
-                        <label style="color:var(--gold-primary); margin-bottom: 10px;"><i
-                                class="fas fa-cloud-upload-alt"></i> Upload New Slide (Image File)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="file" id="input-slide-file" class="form-control" accept="image/*">
-                            <button class="btn btn-primary" id="btn-upload" onclick="uploadSlideFile()">Upload</button>
-                        </div>
-                        <small style="color: #aaa; margin-top:5px; display:block;">Supported: JPG, PNG, GIF</small>
-                    </div>
-
-                    <div
-                        style="text-align:center; margin:15px 0; color:var(--text-muted); position:relative; margin-bottom: 20px;">
-                        <span
-                            style="background: rgb(20,20,20); padding:0 10px; position:relative; z-index:1; font-size: 0.85rem;">OR
-                            ADD VIA LINK</span>
+            <div class="slide static-slide" style="background: #050505;">
+                <div class="slide-overlay">
+                    <div class="slide-text">
                         <div
-                            style="position:absolute; top:50%; left:0; width:100%; height:1px; background:rgba(255,255,255,0.1); z-index:0;">
+                            style="font-size: 7rem; margin-bottom: 20px; color: #ff6b6b; text-shadow: 0 0 30px rgba(255,107,107,0.4);">
+                            <i class="fas fa-mobile-screen-button" style="text-decoration: line-through;"></i>
                         </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Add Slide via URL</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="text" id="input-slide-url" class="form-control"
-                                placeholder="https://example.com/image.jpg">
-                            <button class="btn btn-primary" onclick="addNewSlide()">Add</button>
-                        </div>
-                    </div>
-
-                    <label style="margin-top:20px;">Active Slides</label>
-                    <ul id="admin-slide-list" class="slide-list">
-                        <!-- Populated by JS -->
-                    </ul>
-                </div>
-
-                <!-- 3. APPEARANCE -->
-                <div id="tab-appearance" class="tab-content">
-                    <label>Color Scheme</label>
-                    <div class="theme-grid">
-                        <div class="theme-card" data-theme="gold" onclick="selectTheme('gold')">
-                            <div class="theme-preview">
-                                <div class="theme-preview-bar"
-                                    style="background: linear-gradient(135deg, #0f1316 0%, #1a1a1a 30%, #d4af37 50%, #f3e5ab 70%, #aa8c2c 100%);">
-                                </div>
-                            </div>
-                            <div class="theme-name">Gold Classic</div>
-                        </div>
-                        <div class="theme-card" data-theme="emerald" onclick="selectTheme('emerald')">
-                            <div class="theme-preview">
-                                <div class="theme-preview-bar"
-                                    style="background: linear-gradient(135deg, #0a1612 0%, #0d1f19 30%, #10b981 50%, #6ee7b7 70%, #047857 100%);">
-                                </div>
-                            </div>
-                            <div class="theme-name">Emerald Oasis</div>
-                        </div>
-                        <div class="theme-card" data-theme="royal" onclick="selectTheme('royal')">
-                            <div class="theme-preview">
-                                <div class="theme-preview-bar"
-                                    style="background: linear-gradient(135deg, #0c0f1a 0%, #131830 30%, #3b82f6 50%, #93c5fd 70%, #1d4ed8 100%);">
-                                </div>
-                            </div>
-                            <div class="theme-name">Royal Night</div>
-                        </div>
-                        <div class="theme-card" data-theme="rose" onclick="selectTheme('rose')">
-                            <div class="theme-preview">
-                                <div class="theme-preview-bar"
-                                    style="background: linear-gradient(135deg, #16100f 0%, #251515 30%, #f43f5e 50%, #fda4af 70%, #be123c 100%);">
-                                </div>
-                            </div>
-                            <div class="theme-name">Rose Dawn</div>
-                        </div>
-                    </div>
-
-                    <label style="margin-top: 25px; display: block;">Layout Style</label>
-                    <div class="theme-grid">
-                        <div class="layout-card" data-layout="classic" onclick="selectLayout('classic')">
-                            <div class="layout-preview">
-                                <svg viewBox="0 0 100 60" fill="none">
-                                    <rect x="2" y="2" width="35" height="56" rx="3" fill="rgba(255,255,255,0.2)"
-                                        stroke="var(--gold-primary)" stroke-width="1" />
-                                    <rect x="42" y="2" width="56" height="56" rx="3" fill="rgba(255,255,255,0.1)"
-                                        stroke="rgba(255,255,255,0.3)" stroke-width="1" />
-                                </svg>
-                            </div>
-                            <div class="theme-name">Classic</div>
-                        </div>
-                        <div class="layout-card" data-layout="media-focus" onclick="selectLayout('media-focus')">
-                            <div class="layout-preview">
-                                <svg viewBox="0 0 100 60" fill="none">
-                                    <rect x="2" y="2" width="22" height="56" rx="3" fill="rgba(255,255,255,0.2)"
-                                        stroke="var(--gold-primary)" stroke-width="1" />
-                                    <rect x="28" y="2" width="70" height="56" rx="3" fill="rgba(255,255,255,0.1)"
-                                        stroke="rgba(255,255,255,0.3)" stroke-width="1" />
-                                </svg>
-                            </div>
-                            <div class="theme-name">Media Focus</div>
-                        </div>
-                        <div class="layout-card" data-layout="fullscreen" onclick="selectLayout('fullscreen')">
-                            <div class="layout-preview">
-                                <svg viewBox="0 0 100 60" fill="none">
-                                    <rect x="2" y="2" width="96" height="56" rx="3" fill="rgba(255,255,255,0.1)"
-                                        stroke="rgba(255,255,255,0.3)" stroke-width="1" />
-                                    <rect x="6" y="30" width="28" height="24" rx="2" fill="rgba(255,255,255,0.3)"
-                                        stroke="var(--gold-primary)" stroke-width="1" />
-                                </svg>
-                            </div>
-                            <div class="theme-name">Full Screen</div>
-                        </div>
-                        <div class="layout-card" data-layout="vertical" onclick="selectLayout('vertical')">
-                            <div class="layout-preview">
-                                <svg viewBox="0 0 100 60" fill="none">
-                                    <rect x="2" y="2" width="96" height="30" rx="3" fill="rgba(255,255,255,0.1)"
-                                        stroke="rgba(255,255,255,0.3)" stroke-width="1" />
-                                    <rect x="2" y="36" width="96" height="22" rx="3" fill="rgba(255,255,255,0.2)"
-                                        stroke="var(--gold-primary)" stroke-width="1" />
-                                </svg>
-                            </div>
-                            <div class="theme-name">Vertical</div>
-                        </div>
+                        <h2 style="color: #ff6b6b;">Mobile Phones</h2>
+                        <p>Please switch your phone to silent mode.</p>
                     </div>
                 </div>
+            </div>
 
-                <!-- 4. API SETTINGS -->
-                <div id="tab-api" class="tab-content">
-                    <p style="color: var(--gold-primary); margin-bottom: 20px;">
-                        <i class="fas fa-satellite-dish"></i> Prayer Times provided by Aladhan API
-                    </p>
-                    <div class="form-group">
-                        <label>City</label>
-                        <input type="text" id="api-city" class="form-control" placeholder="London">
-                    </div>
-                    <div class="form-group">
-                        <label>Country</label>
-                        <input type="text" id="api-country" class="form-control" placeholder="UK">
-                    </div>
-                    <div class="form-group">
-                        <label>Calculation Method</label>
-                        <select id="api-method" class="form-control"
-                            style="background: rgba(255, 255, 255, 0.05); color: white;">
-                            <option value="3">Muslim World League</option>
-                            <option value="2">ISNA</option>
-                            <option value="5">Egyptian General Authority</option>
-                            <option value="4">Umm Al-Qura University, Makkah</option>
-                            <option value="1">University of Islamic Sciences, Karachi</option>
-                            <option value="12">France (UOIF)</option>
-                            <option value="13">Turkey (Diyanet)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Asr Juristic Method</label>
-                        <select id="api-school" class="form-control"
-                            style="background: rgba(255, 255, 255, 0.05); color: white;">
-                            <option value="0">Shafi (Standard)</option>
-                            <option value="1">Hanafi</option>
-                        </select>
+            <div class="slide static-slide" style="background: radial-gradient(circle, #203a43, #0f2027);">
+                <div class="slide-overlay">
+                    <div class="slide-text">
+                        <div style="font-size: 4rem; color: var(--gold-light); margin-bottom: 10px;">
+                            <i class="fas fa-hand-holding-heart"></i>
+                        </div>
+                        <h2 style="color: var(--gold-light);">Donate Generously</h2>
+                        <p style="color: var(--gold-primary); font-size: 1.6rem; font-style: italic;">"Charity does not
+                            decrease wealth"</p>
                     </div>
                 </div>
+            </div>
 
-                <!-- SAVE BUTTON -->
-                <div
-                    style="margin-top:30px; text-align:right; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
-                    <button class="btn btn-primary" id="btn-save" style="width: 200px;" onclick="saveSettings()">
-                        <i class="fas fa-save"></i> Save Changes
-                    </button>
-                </div>
+        </div>
 
+
+
+
+
+        <!-- COUNTDOWN OVERLAY -->
+        <div id="countdown-overlay" class="fullscreen-overlay">
+            <div class="overlay-content">
+                <div class="overlay-label">The Prayer of</div>
+                <div class="overlay-prayer-name" id="overlay-prayer-name">Asr</div>
+                <div class="overlay-label">Is In</div>
+                <div class="overlay-timer" id="overlay-timer">14:59</div>
             </div>
         </div>
-    </div>
 
-    <script>
-        // --- FIREBASE CONFIGURATION ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyCirBPRHp02zVZFUp5F1t42xm0jEmZeiEc",
-            authDomain: "mosquedisplay-eab43.firebaseapp.com",
-            projectId: "mosquedisplay-eab43",
-            storageBucket: "mosquedisplay-eab43.firebasestorage.app",
-            messagingSenderId: "542105594974",
-            appId: "1:542105594974:web:63b591fa0d3cd697eb98cf"
-        };
+        <!-- SILENT MODE OVERLAY -->
+        <div id="silent-overlay" class="fullscreen-overlay">
+            <div class="overlay-content">
+                <div class="silent-icon"><i class="fas fa-mobile-alt" style="text-decoration: line-through;"></i></div>
+                <div class="silent-text">Please Switch Phones to Silent</div>
+            </div>
+        </div>
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-        const storage = firebase.storage();
+        <script>
+            // --- 1. FIREBASE CONFIGURATION (PRE-FILLED WITH YOUR KEYS) ---
+            const firebaseConfig = {
+                apiKey: "AIzaSyCirBPRHp02zVZFUp5F1t42xm0jEmZeiEc",
+                authDomain: "mosquedisplay-eab43.firebaseapp.com",
+                projectId: "mosquedisplay-eab43",
+                storageBucket: "mosquedisplay-eab43.firebasestorage.app",
+                messagingSenderId: "542105594974",
+                appId: "1:542105594974:web:63b591fa0d3cd697eb98cf"
+            };
+            // ----------------------------------------------------
 
-        // --- CONSTANTS ---
-        const CONSTANTS = {
-            FRIDAY_DAY_INDEX: 5,
-            MAX_IMAGE_SIZE_BYTES: 500000,
-            IMAGE_QUALITY: 0.6,
-            MAX_IMAGE_WIDTH: 800
-        };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.firestore();
+            const auth = firebase.auth();
 
-        const DEFAULT_CONFIG = {
-            theme: 'gold',
-            layout: 'classic',
-            jummah: {
-                dayIndex: CONSTANTS.FRIDAY_DAY_INDEX,
-                startDisplayHour: 10, startDisplayMinute: 0,
-                speechHour: 12, speechMinute: 15,
-                khutbahHour: 12, khutbahMinute: 40,
-                jamaatHour: 12, jamaatMinute: 45,
-                postPrayerEndHour: 15, postPrayerEndMinute: 0
-            },
-            slides: [],
-            prayerConfig: {
-                city: "Ravensthorpe", country: "UK", method: 3, school: 1
-            },
-            dailyPrayers: {
-                fajr: { h: 6, m: 0 },
-                dhuhr: { h: 13, m: 0 },
-                asr: { h: 16, m: 30 },
-                maghrib: { h: 18, m: 0 },
-                isha: { h: 20, m: 30 }
-            }
-        };
+            // --- CONSTANTS (Avoid Magic Numbers) ---
+            const CONSTANTS = {
+                SLIDE_DURATION: 8000,
+                MAX_IMAGE_WIDTH: 800,
+                IMAGE_QUALITY: 0.6,
+                MAX_IMAGE_SIZE_BYTES: 500000,
+                FRIDAY_DAY_INDEX: 5,
+                CLOCK_UPDATE_INTERVAL: 1000
+            };
 
-        let APP_CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+            // Theme options with metadata
+            const THEME_OPTIONS = {
+                gold: { name: 'Gold Classic', primary: '#d4af37', light: '#f3e5ab', dark: '#aa8c2c' },
+                emerald: { name: 'Emerald Oasis', primary: '#10b981', light: '#6ee7b7', dark: '#047857' },
+                royal: { name: 'Royal Night', primary: '#3b82f6', light: '#93c5fd', dark: '#1d4ed8' },
+                rose: { name: 'Rose Dawn', primary: '#f43f5e', light: '#fda4af', dark: '#be123c' }
+            };
 
-        // --- AUTH LOGIC ---
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                document.getElementById('login-view').style.display = 'none';
-                document.getElementById('settings-view').style.display = 'block';
-                document.getElementById('auth-controls').style.display = 'block';
-                document.getElementById('user-email').innerText = user.email;
-                loadSettings();
-            } else {
-                document.getElementById('login-view').style.display = 'block';
-                document.getElementById('settings-view').style.display = 'none';
-                document.getElementById('auth-controls').style.display = 'none';
-            }
-        });
+            // Layout options with metadata
+            const LAYOUT_OPTIONS = {
+                classic: { name: 'Classic', description: '40/60 split layout' },
+                'media-focus': { name: 'Media Focus', description: '25/75 split with larger slideshow' },
+                fullscreen: { name: 'Full Screen', description: 'Slideshow fullscreen with overlay schedule' },
+                vertical: { name: 'Vertical', description: 'Stacked layout for portrait displays' }
+            };
 
-        function loginAdmin() {
-            const email = document.getElementById('admin-email').value;
-            const pass = document.getElementById('admin-password').value;
-            const btn = document.querySelector('#login-view .btn-primary');
-            const errorP = document.getElementById('login-error');
-
-            if (!email || !pass) {
-                errorP.innerText = "Please fill in all fields.";
-                errorP.style.display = 'block';
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
-            errorP.style.display = 'none';
-
-            auth.signInWithEmailAndPassword(email, pass)
-                .then(() => {
-                    // Success handled by onAuthStateChanged
-                })
-                .catch((error) => {
-                    btn.disabled = false;
-                    btn.innerText = 'Login';
-                    errorP.innerText = error.message;
-                    errorP.style.display = 'block';
-                });
-        }
-
-        function logout() {
-            auth.signOut();
-        }
-
-        // --- SETTINGS MANAGEMENT ---
-        function loadSettings() {
-            // Load Settings
-            db.collection("mosque_data").doc("settings").get().then((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    APP_CONFIG.jummah = data.jummah || DEFAULT_CONFIG.jummah;
-                    APP_CONFIG.theme = data.theme || DEFAULT_CONFIG.theme;
-                    APP_CONFIG.layout = data.layout || DEFAULT_CONFIG.layout;
-                    APP_CONFIG.prayerConfig = data.prayerConfig || DEFAULT_CONFIG.prayerConfig;
-                    APP_CONFIG.dailyPrayers = data.dailyPrayers || DEFAULT_CONFIG.dailyPrayers;
-
-                    updateStatsUI();
+            // --- GLOBAL CONFIG & STATE ---
+            const DEFAULT_CONFIG = {
+                theme: 'gold',      // Current theme
+                layout: 'classic',  // Current layout
+                jummah: {
+                    dayIndex: CONSTANTS.FRIDAY_DAY_INDEX,
+                    startDisplayHour: 10,
+                    startDisplayMinute: 0,
+                    speechHour: 12,
+                    speechMinute: 15,
+                    khutbahHour: 12,
+                    khutbahMinute: 40,
+                    jamaatHour: 12,
+                    jamaatMinute: 45,
+                    postPrayerEndHour: 15,
+                    postPrayerEndMinute: 0
+                },
+                slides: [],
+                prayerConfig: {
+                    city: "Ravensthorpe",
+                    country: "UK",
+                    method: 3, // Muslim World League
+                    school: 1  // Hanafi
+                },
+                dailyPrayers: {
+                    fajr: { h: 6, m: 0 },
+                    dhuhr: { h: 13, m: 0 },
+                    asr: { h: 16, m: 30 },
+                    maghrib: { h: 18, m: 0 },
+                    isha: { h: 20, m: 30 }
                 }
-            });
+            };
 
-            // Load Slides
-            db.collection("slides").orderBy("order", "asc").onSnapshot((snapshot) => {
-                APP_CONFIG.slides = [];
-                snapshot.forEach((doc) => {
-                    APP_CONFIG.slides.push({ ...doc.data(), id: doc.id });
-                });
-                renderSlideList();
-            });
-        }
+            let APP_CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 
-        function updateStatsUI() {
-            // Timings
-            document.getElementById('input-speech-h').value = APP_CONFIG.jummah.speechHour;
-            document.getElementById('input-speech-m').value = APP_CONFIG.jummah.speechMinute;
-            document.getElementById('input-khutbah-h').value = APP_CONFIG.jummah.khutbahHour;
-            document.getElementById('input-khutbah-m').value = APP_CONFIG.jummah.khutbahMinute;
-            document.getElementById('input-jamaat-h').value = APP_CONFIG.jummah.jamaatHour;
-            document.getElementById('input-jamaat-m').value = APP_CONFIG.jummah.jamaatMinute;
-            document.getElementById('input-start-h').value = APP_CONFIG.jummah.startDisplayHour;
-            document.getElementById('input-start-m').value = APP_CONFIG.jummah.startDisplayMinute;
+            // --- DOM ELEMENTS ---
+            const slideshowContainer = document.getElementById('slideshow-container');
+            const progressBar = document.getElementById('slide-progress');
+            const loadingMessage = document.getElementById('loading-message');
+            const staticSlides = Array.from(document.querySelectorAll('.static-slide'));
 
-            // API Settings
-            if (APP_CONFIG.prayerConfig) {
-                document.getElementById('api-city').value = APP_CONFIG.prayerConfig.city || '';
-                document.getElementById('api-country').value = APP_CONFIG.prayerConfig.country || '';
-                document.getElementById('api-method').value = APP_CONFIG.prayerConfig.method || 3;
-                document.getElementById('api-school').value = APP_CONFIG.prayerConfig.school || 1;
-                document.getElementById('api-school').value = APP_CONFIG.prayerConfig.school || 1;
+            // --- STATE VARIABLES ---
+            let currentAnimationFrame = null;
+            let dynamicSlides = [];
+            let currentSlideIndex = 0;
+
+
+
+            // --- UTILITY FUNCTIONS ---
+            /**
+             * Escapes HTML entities to prevent XSS attacks
+             * @param {string} text - The text to escape
+             * @returns {string} - Escaped HTML string
+             */
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
             }
 
-            // Daily Prayers
-            if (APP_CONFIG.dailyPrayers) {
-                const dp = APP_CONFIG.dailyPrayers;
-                document.getElementById('input-fajr-h').value = dp.fajr.h;
-                document.getElementById('input-fajr-m').value = dp.fajr.m;
-                document.getElementById('input-dhuhr-h').value = dp.dhuhr.h;
-                document.getElementById('input-dhuhr-m').value = dp.dhuhr.m;
-                document.getElementById('input-asr-h').value = dp.asr.h;
-                document.getElementById('input-asr-m').value = dp.asr.m;
-                document.getElementById('input-maghrib-h').value = dp.maghrib.h;
-                document.getElementById('input-maghrib-m').value = dp.maghrib.m;
-                document.getElementById('input-isha-h').value = dp.isha.h;
-                document.getElementById('input-isha-m').value = dp.isha.m;
+            /**
+             * Validates if a string is a valid HTTP/HTTPS URL or data URL
+             * @param {string} string - The URL to validate
+             * @returns {boolean} - True if valid URL
+             */
+            function isValidUrl(string) {
+                // Allow data URLs (for base64 images)
+                if (string.startsWith('data:image/')) {
+                    return true;
+                }
+                try {
+                    const url = new URL(string);
+                    return url.protocol === 'http:' || url.protocol === 'https:';
+                } catch {
+                    return false;
+                }
             }
 
-            // visuals
-            selectTheme(APP_CONFIG.theme);
-            selectLayout(APP_CONFIG.layout);
-        }
+            /**
+             * Validates a time input value within a range
+             * @param {string|number} value - The input value
+             * @param {number} min - Minimum allowed value
+             * @param {number} max - Maximum allowed value  
+             * @param {number} fallback - Default value if invalid
+             * @returns {number} - Validated number
+             */
+            function validateTimeInput(value, min, max, fallback) {
+                const num = parseInt(value, 10);
+                if (isNaN(num) || num < min || num > max) {
+                    return fallback;
+                }
+                return num;
+            }
 
-        function saveSettings() {
-            const btn = document.getElementById('btn-save');
-            const originalText = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            // --- INITIALIZATION ---
+            /**
+             * Initializes the application - sets up listeners and starts clock
+             */
+            function initApp() {
+                setupRealtimeListener(); // Connect to Cloud
 
-            // Validate Timings
-            APP_CONFIG.jummah.speechHour = parseInt(document.getElementById('input-speech-h').value) || 0;
-            APP_CONFIG.jummah.speechMinute = parseInt(document.getElementById('input-speech-m').value) || 0;
-            APP_CONFIG.jummah.khutbahHour = parseInt(document.getElementById('input-khutbah-h').value) || 0;
-            APP_CONFIG.jummah.khutbahMinute = parseInt(document.getElementById('input-khutbah-m').value) || 0;
-            APP_CONFIG.jummah.jamaatHour = parseInt(document.getElementById('input-jamaat-h').value) || 0;
-            APP_CONFIG.jummah.jamaatMinute = parseInt(document.getElementById('input-jamaat-m').value) || 0;
-            APP_CONFIG.jummah.startDisplayHour = parseInt(document.getElementById('input-start-h').value) || 0;
-            APP_CONFIG.jummah.startDisplayMinute = parseInt(document.getElementById('input-start-m').value) || 0;
+                updateClock();
+                setInterval(updateClock, CONSTANTS.CLOCK_UPDATE_INTERVAL);
+                fetchPrayerTimes(); // Fetch immediately
+                // Refetch prayers every hour to ensure date changes are handled
+                setInterval(fetchPrayerTimes, 60 * 60 * 1000);
 
-            // Update Prayer Config
-            APP_CONFIG.prayerConfig.city = document.getElementById('api-city').value.trim();
-            APP_CONFIG.prayerConfig.country = document.getElementById('api-country').value.trim();
-            APP_CONFIG.prayerConfig.method = parseInt(document.getElementById('api-method').value);
-            APP_CONFIG.prayerConfig.school = parseInt(document.getElementById('api-school').value);
+                // Start Countdown Loop
+                setInterval(checkPrayerCountdown, 1000);
+                checkPrayerCountdown(); // check immediately
+            }
 
-            // Update Daily Prayers
-            APP_CONFIG.dailyPrayers.fajr.h = parseInt(document.getElementById('input-fajr-h').value) || 0;
-            APP_CONFIG.dailyPrayers.fajr.m = parseInt(document.getElementById('input-fajr-m').value) || 0;
-            APP_CONFIG.dailyPrayers.dhuhr.h = parseInt(document.getElementById('input-dhuhr-h').value) || 0;
-            APP_CONFIG.dailyPrayers.dhuhr.m = parseInt(document.getElementById('input-dhuhr-m').value) || 0;
-            APP_CONFIG.dailyPrayers.asr.h = parseInt(document.getElementById('input-asr-h').value) || 0;
-            APP_CONFIG.dailyPrayers.asr.m = parseInt(document.getElementById('input-asr-m').value) || 0;
-            APP_CONFIG.dailyPrayers.maghrib.h = parseInt(document.getElementById('input-maghrib-h').value) || 0;
-            APP_CONFIG.dailyPrayers.maghrib.m = parseInt(document.getElementById('input-maghrib-m').value) || 0;
-            APP_CONFIG.dailyPrayers.isha.h = parseInt(document.getElementById('input-isha-h').value) || 0;
-            APP_CONFIG.dailyPrayers.isha.m = parseInt(document.getElementById('input-isha-m').value) || 0;
+            // --- REALTIME DATABASE CONNECTION ---
+            /**
+             * Sets up Firebase real-time listeners for settings and slides
+             */
+            function setupRealtimeListener() {
+                // 1. Listen to SETTINGS (Timings, Theme, Layout) - with error handler
+                db.collection("mosque_data").doc("settings")
+                    .onSnapshot((doc) => {
+                        if (doc.exists) {
+                            const data = doc.data();
+                            APP_CONFIG.jummah = data.jummah || DEFAULT_CONFIG.jummah;
+                            APP_CONFIG.theme = data.theme || DEFAULT_CONFIG.theme;
+                            APP_CONFIG.layout = data.layout || DEFAULT_CONFIG.layout;
+                            APP_CONFIG.prayerConfig = data.prayerConfig || DEFAULT_CONFIG.prayerConfig;
+                            APP_CONFIG.dailyPrayers = data.dailyPrayers || DEFAULT_CONFIG.dailyPrayers;
 
-            db.collection("mosque_data").doc("settings").set({
-                jummah: APP_CONFIG.jummah,
-                theme: APP_CONFIG.theme,
-                layout: APP_CONFIG.layout,
-                prayerConfig: APP_CONFIG.prayerConfig,
-                dailyPrayers: APP_CONFIG.dailyPrayers
-            }, { merge: true })
-                .then(() => {
-                    btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
-                    setTimeout(() => {
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    }, 2000);
-                })
-                .catch((error) => {
-                    alert("Error saving: " + error.message);
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
+                            updateJummahTimesDisplay();
+                            updateClock();
+                            applyTheme(APP_CONFIG.theme);   // Apply saved theme
+                            applyLayout(APP_CONFIG.layout); // Apply saved layout
+                            fetchPrayerTimes(); // Re-fetch with new settings
+                        } else {
+                            db.collection("mosque_data").doc("settings").set({
+                                jummah: DEFAULT_CONFIG.jummah,
+                                theme: DEFAULT_CONFIG.theme,
+                                layout: DEFAULT_CONFIG.layout,
+                                prayerConfig: DEFAULT_CONFIG.prayerConfig
+                            });
+                        }
+                    }, (error) => {
+                        console.error("Error getting settings: ", error);
+                    });
+
+                // 2. Listen to SLIDES (Separate Collection for Unlimited Storage)
+                db.collection("slides").orderBy("order", "asc")
+                    .onSnapshot((snapshot) => {
+                        APP_CONFIG.slides = [];
+                        snapshot.forEach((doc) => {
+                            const s = doc.data();
+                            // Add ID so we can update/delete later
+                            APP_CONFIG.slides.push({ ...s, id: doc.id });
+                        });
+
+
+                        initSlideshowFromConfig(); // Reload slideshow
+
+                        if (snapshot.empty) {
+                            console.log("No slides found in collection.");
+                        }
+                    }, (error) => {
+                        console.error("Error getting slides: ", error);
+                    });
+            }
+
+
+
+            /**
+             * Applies a theme to the page by setting data-theme attribute
+             * @param {string} themeName - Theme identifier (gold, emerald, royal, rose)
+             */
+            function applyTheme(themeName) {
+                if (!THEME_OPTIONS[themeName]) themeName = 'gold';
+                document.body.setAttribute('data-theme', themeName);
+                APP_CONFIG.theme = themeName;
+
+                // Update theme card selection UI
+                document.querySelectorAll('.theme-card').forEach(card => {
+                    card.classList.remove('selected');
+                    if (card.dataset.theme === themeName) {
+                        card.classList.add('selected');
+                    }
                 });
-        }
+            }
 
-        // --- SLIDE LOGIC ---
-        function renderSlideList() {
-            const list = document.getElementById('admin-slide-list');
-            list.innerHTML = '';
-            APP_CONFIG.slides.forEach((slide, index) => {
-                const li = document.createElement('li');
-                li.className = `slide-item ${!slide.visible ? 'hidden-slide' : ''}`;
-                li.innerHTML = `
-                    <span style="font-family:monospace; color:var(--gold-primary);">${index + 1}</span>
-                    <img src="${slide.url}" class="slide-thumb">
-                    <span class="slide-url" title="${slide.url}">${slide.url}</span>
-                    <div class="slide-actions">
-                        <button class="icon-btn" onclick="toggleSlideVisible('${slide.id}', ${!slide.visible})" title="Toggle Visibility">
-                            <i class="fas ${slide.visible ? 'fa-eye' : 'fa-eye-slash'}"></i>
-                        </button>
-                        <button class="icon-btn" onclick="moveSlideUp(${index})" title="Move Up">
-                            <i class="fas fa-chevron-up"></i>
-                        </button>
-                        <button class="icon-btn" onclick="moveSlideDown(${index})" title="Move Down">
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <button class="icon-btn" onclick="deleteSlide('${slide.id}')" title="Delete" style="color:#ff6b6b">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `;
-                list.appendChild(li);
-            });
-        }
+            /**
+             * Handles theme card click - applies theme instantly
+             * @param {string} themeName - Theme identifier
+             */
+            function selectTheme(themeName) {
+                applyTheme(themeName);
+            }
 
-        function addNewSlide() {
-            const urlInput = document.getElementById('input-slide-url');
-            const url = urlInput.value.trim();
-            if (!url) return;
+            /**
+             * Applies a layout to the page by setting data-layout attribute
+             * @param {string} layoutName - Layout identifier (classic, media-focus, fullscreen, vertical)
+             */
+            function applyLayout(layoutName) {
+                if (!LAYOUT_OPTIONS[layoutName]) layoutName = 'classic';
+                document.body.setAttribute('data-layout', layoutName);
+                APP_CONFIG.layout = layoutName;
 
-            db.collection("slides").add({
-                url: url,
-                visible: true,
-                order: APP_CONFIG.slides.length
-            }).then(() => {
-                urlInput.value = '';
-            });
-        }
+                // Update layout card selection UI
+                document.querySelectorAll('.layout-card').forEach(card => {
+                    card.classList.remove('selected');
+                    if (card.dataset.layout === layoutName) {
+                        card.classList.add('selected');
+                    }
+                });
+            }
 
-        // Upload Logic (Compressed)
-        function uploadSlideFile() {
-            const fileInput = document.getElementById('input-slide-file');
-            const file = fileInput.files[0];
-            const btn = document.getElementById('btn-upload');
+            /**
+             * Handles layout card click - applies layout instantly
+             * @param {string} layoutName - Layout identifier
+             */
+            function selectLayout(layoutName) {
+                applyLayout(layoutName);
+            }
 
-            if (!file) return;
+            // --- SETTINGS MANAGEMENT ---
 
-            btn.disabled = true;
-            btn.innerText = "Compressing...";
 
-            // 1. Compress Image
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = (event) => {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
+            // --- SLIDESHOW ENGINE ---
+            /**
+             * Initializes the slideshow from the current configuration
+             * Creates slide elements from dynamic slides and prepares animation
+             */
+            function initSlideshowFromConfig() {
+                // Stop existing animation
+                if (currentAnimationFrame) cancelAnimationFrame(currentAnimationFrame);
 
-                    if (width > CONSTANTS.MAX_IMAGE_WIDTH) {
-                        height = Math.round(height * (CONSTANTS.MAX_IMAGE_WIDTH / width));
-                        width = CONSTANTS.MAX_IMAGE_WIDTH;
+                // Clear Dynamic Slides from DOM
+                dynamicSlides.forEach(el => el.remove());
+                dynamicSlides = [];
+
+                // Filter visible slides only
+                const visibleSlides = APP_CONFIG.slides.filter(s => s.visible);
+
+                if (visibleSlides.length === 0) {
+                    loadingMessage.innerText = "Display Active";
+                    loadingMessage.style.display = 'none'; // Just hide loader, show static slides
+                    startSlideshowAnimation([...staticSlides]); // Animate static slides only
+                    return;
+                }
+
+                loadingMessage.innerText = "Loading slides...";
+                loadingMessage.style.display = 'block';
+
+                let loadedCount = 0;
+
+                // Note: Since we need correct order, we will create elements first, then append.
+                const slideElements = [];
+
+                visibleSlides.forEach((slideItem, index) => {
+                    const slideDiv = document.createElement('div');
+                    slideDiv.className = 'slide';
+
+                    const bgLayer = document.createElement('div');
+                    bgLayer.className = 'slide-bg';
+
+                    const contentLayer = document.createElement('div');
+                    contentLayer.className = 'slide-content';
+
+                    // Image Loading Logic
+                    const img = new Image();
+                    img.onload = () => {
+                        bgLayer.style.backgroundImage = `url('${slideItem.url}')`;
+                        contentLayer.style.backgroundImage = `url('${slideItem.url}')`;
+                        checkAllLoaded();
+                    };
+                    img.onerror = () => {
+                        console.warn(`Failed to load: ${slideItem.url}`);
+                        checkAllLoaded();
+                    };
+                    img.src = slideItem.url;
+
+                    slideDiv.appendChild(bgLayer);
+                    slideDiv.appendChild(contentLayer);
+
+                    // Add Welcome Overlay to First Slide
+                    if (index === 0) {
+                        const overlayDiv = document.createElement('div');
+                        overlayDiv.className = 'slide-overlay';
+                        overlayDiv.innerHTML = `
+                        <div class="slide-text">
+                            <h2>Welcome</h2>
+                            <p>To Faizan-E-Madinah & Education Center</p>
+                        </div>
+                     `;
+                        slideDiv.appendChild(overlayDiv);
                     }
 
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
+                    slideElements.push(slideDiv);
+                });
 
-                    const dataUrl = canvas.toDataURL('image/jpeg', CONSTANTS.IMAGE_QUALITY);
+                function checkAllLoaded() {
+                    loadedCount++;
+                    if (loadedCount === visibleSlides.length) {
+                        loadingMessage.style.display = 'none';
 
-                    // 2. Upload to Firestore (as Base64 string for simplicity/portability without storage bucket setup issues)
-                    // If you have Storage enabled, upload there. For now, we use Data URL to keep it simple as per original code logic.
-                    // However, original code implies "Cloud System" so ideally storage, but dataURL works for small lists.
+                        // Add to DOM in order
+                        slideElements.forEach(el => {
+                            if (staticSlides.length > 0) slideshowContainer.insertBefore(el, staticSlides[0]);
+                            else slideshowContainer.appendChild(el);
+                            dynamicSlides.push(el);
+                        });
 
-                    btn.innerText = "Uploading...";
-
-                    db.collection("slides").add({
-                        url: dataUrl,
-                        visible: true,
-                        order: APP_CONFIG.slides.length
-                    }).then(() => {
-                        fileInput.value = '';
-                        btn.innerText = "Upload";
-                        btn.disabled = false;
-                    }).catch(err => {
-                        console.error(err);
-                        alert("Upload failed. Image might be too large for Firestore document.");
-                        btn.innerText = "Upload";
-                        btn.disabled = false;
-                    });
+                        startSlideshowAnimation([...dynamicSlides, ...staticSlides]);
+                    }
                 }
             }
-        }
 
-        function deleteSlide(id) {
-            if (confirm("Are you sure you want to delete this slide?")) {
-                db.collection("slides").doc(id).delete();
+            /**
+             * Starts the slideshow animation with proper cleanup
+             * @param {HTMLElement[]} allSlides - Array of slide elements to animate
+             */
+            function startSlideshowAnimation(allSlides) {
+                // Cancel any existing animation to prevent memory leaks
+                if (currentAnimationFrame) {
+                    cancelAnimationFrame(currentAnimationFrame);
+                    currentAnimationFrame = null;
+                }
+
+                currentSlideIndex = 0;
+
+                // Reset all
+                document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+
+                if (allSlides.length === 0) return;
+
+                allSlides[0].classList.add('active');
+
+                let startTime = Date.now();
+
+                function animate() {
+                    const now = Date.now();
+                    const elapsed = now - startTime;
+                    const progress = Math.min((elapsed / CONSTANTS.SLIDE_DURATION) * 100, 100);
+
+                    if (progressBar) progressBar.style.width = progress + "%";
+
+                    if (elapsed >= CONSTANTS.SLIDE_DURATION) {
+                        allSlides[currentSlideIndex].classList.remove('active');
+                        currentSlideIndex = (currentSlideIndex + 1) % allSlides.length;
+                        allSlides[currentSlideIndex].classList.add('active');
+
+                        startTime = Date.now();
+                        if (progressBar) progressBar.style.width = "0%";
+                    }
+
+                    currentAnimationFrame = requestAnimationFrame(animate);
+                }
+
+                if (allSlides.length > 1) {
+                    progressBar.style.display = 'block';
+                    currentAnimationFrame = requestAnimationFrame(animate);
+                } else {
+                    progressBar.style.display = 'none';
+                }
             }
-        }
 
-        function toggleSlideVisible(id, newState) {
-            db.collection("slides").doc(id).update({ visible: newState });
-        }
+            // --- JUMMAH TIMES DISPLAY ---
+            function updateJummahTimesDisplay() {
+                // Check if today is Friday (Day 5)
+                const today = new Date();
+                const isFriday = today.getDay() === 5;
 
-        function moveSlideUp(index) {
-            if (index === 0) return;
-            swapSlides(index, index - 1);
-        }
+                const jummahContainer = document.querySelector('.jummah-container');
+                const countdownContainer = document.getElementById('countdown-container');
 
-        function moveSlideDown(index) {
-            if (index === APP_CONFIG.slides.length - 1) return;
-            swapSlides(index, index + 1);
-        }
+                if (!isFriday) {
+                    if (jummahContainer) jummahContainer.style.display = 'none';
+                    if (countdownContainer) countdownContainer.style.display = 'none';
+                    return; // Exit if not Friday
+                }
 
-        function swapSlides(idx1, idx2) {
-            const s1 = APP_CONFIG.slides[idx1];
-            const s2 = APP_CONFIG.slides[idx2];
+                // If Friday, ensure they are visible
+                if (jummahContainer) jummahContainer.style.display = 'flex';
+                // Countdown visibility is handled by updateClock logic below, but we ensure container is potentially visible here
 
-            // Batch update for atomicity
-            const batch = db.batch();
-            const ref1 = db.collection("slides").doc(s1.id);
-            const ref2 = db.collection("slides").doc(s2.id);
+                // Re-render times
+                const j = APP_CONFIG.jummah;
 
-            // Swap order fields
-            // Note: In real app, we should probably update ALL orders to be safe, but swapping works if list is consistent
-            batch.update(ref1, { order: idx2 });
-            batch.update(ref2, { order: idx1 }); // This assumes order == index, which we try to maintain
+                const formatTime = (hour, minute) => {
+                    const period = hour >= 12 ? 'PM' : 'AM';
+                    const displayHour = hour % 12 || 12;
+                    const displayMinute = minute < 10 ? '0' + minute : minute;
+                    return `${displayHour}:${displayMinute} ${period}`;
+                };
 
-            batch.commit().catch(err => console.error(err));
-        }
+                document.getElementById('speech-time').innerText = formatTime(j.speechHour, j.speechMinute);
+                document.getElementById('khutbah-time').innerText = formatTime(j.khutbahHour, j.khutbahMinute);
+                document.getElementById('jamaat-time').innerText = formatTime(j.jamaatHour, j.jamaatMinute);
+            }
 
-        // --- UI HELPERS ---
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(`tab-${tabName}`).classList.add('active');
+            // --- CLOCK & COUNTDOWN ---
+            function updateClock() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                document.getElementById('clock-time').innerText = timeString;
 
-            // Highlight button
-            const buttons = document.querySelectorAll('.tab-btn');
-            if (tabName === 'timings') buttons[0].classList.add('active');
-            if (tabName === 'slides') buttons[1].classList.add('active');
-            if (tabName === 'appearance') buttons[2].classList.add('active');
-            if (tabName === 'api') buttons[3].classList.add('active');
-        }
+                const dateOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                document.getElementById('clock-date').innerText = now.toLocaleDateString('en-GB', dateOptions);
+            }
 
-        function selectTheme(theme) {
-            APP_CONFIG.theme = theme;
-            document.querySelectorAll('.theme-card').forEach(c => {
-                c.classList.remove('selected');
-                if (c.dataset.theme === theme) c.classList.add('selected');
-            });
-        }
+            /**
+             * Gets the ordinal suffix for a day number (st, nd, rd, th)
+             * @param {number} day - Day of month (1-31)
+             * @returns {string} - Ordinal suffix
+             */
+            function getOrdinalSuffix(day) {
+                if (day > 3 && day < 21) return 'th';
+                switch (day % 10) {
+                    case 1:
+                        return "st";
+                    case 2:
+                        return "nd";
+                    case 3:
+                        return "rd";
+                    default:
+                        return "th";
+                }
+            }
 
-        function selectLayout(layout) {
-            APP_CONFIG.layout = layout;
-            document.querySelectorAll('.layout-card').forEach(c => {
-                c.classList.remove('selected');
-                if (c.dataset.layout === layout) c.classList.add('selected');
-            });
-        }
 
-    </script>
+
+            // --- ALADHAN API INTEGRATION ---
+            function fetchPrayerTimes() {
+                if (!APP_CONFIG.prayerConfig) return;
+
+                const { city, country, method, school } = APP_CONFIG.prayerConfig;
+                if (!city || !country) return;
+
+                // Aladhan API Endpoint
+                const apiUrl = `https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&method=${method}&school=${school}`;
+
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.code === 200) {
+                            const timings = data.data.timings;
+                            updateDailyPrayerDisplay(timings);
+                        } else {
+                            console.error('Error fetching prayer times:', data.status);
+                        }
+                    })
+                    .catch(error => console.error('Network Error:', error));
+            }
+
+            function updateDailyPrayerDisplay(timings) {
+                // Helper to clean time string
+                const cleanTime = (t) => t.split(' ')[0];
+
+                const prayers = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
+
+                prayers.forEach(prayer => {
+                    const timeStr = timings[prayer.charAt(0).toUpperCase() + prayer.slice(1)]; // Title Case for API
+                    const finalTime = cleanTime(timeStr);
+
+                    // Update "Begins" Time
+                    const beginsEl = document.getElementById(`time-${prayer}`);
+                    if (beginsEl) beginsEl.innerText = finalTime;
+
+                    // Update "Jamat" Time
+                    const jamatEl = document.getElementById(`jamat-${prayer}`);
+                    if (jamatEl) {
+                        if (prayer === 'sunrise') {
+                            jamatEl.innerText = "-";
+                        } else if (APP_CONFIG.dailyPrayers && APP_CONFIG.dailyPrayers[prayer]) {
+                            const p = APP_CONFIG.dailyPrayers[prayer];
+                            const h = p.h.toString().padStart(2, '0');
+                            const m = p.m.toString().padStart(2, '0');
+                            jamatEl.innerText = `${h}:${m}`;
+                        }
+                    }
+
+                    // Reset Highlights
+                    const row = document.getElementById(`row-${prayer}`);
+                    if (row) row.classList.remove('highlight');
+                });
+
+                // Highlight Current/Next Prayer Logic
+                // We will highlight the prayer that is UP NEXT or CURRENTLY ACTIVE
+                const now = new Date();
+                const nowMin = now.getHours() * 60 + now.getMinutes();
+
+                let activePrayer = null;
+                // Simple logic: find first prayer that hasn't passed yet? 
+                // Or find the prayer range we are currently IN?
+                // Let's highlight the one we are waiting for (Next Jamat) OR currently in.
+
+                // For now, let's stick to the "Next Prayer" logic provided previously
+                // ... (Logic from previous snippet adapted for table rows)
+                const prayerObjs = [
+                    { id: 'row-fajr', time: timings.Fajr },
+                    { id: 'row-sunrise', time: timings.Sunrise },
+                    { id: 'row-dhuhr', time: timings.Dhuhr },
+                    { id: 'row-asr', time: timings.Asr },
+                    { id: 'row-maghrib', time: timings.Maghrib },
+                    { id: 'row-isha', time: timings.Isha }
+                ];
+
+                let nextRowId = 'row-fajr'; // default next day Fajr
+
+                for (let i = 0; i < prayerObjs.length; i++) {
+                    const [h, m] = prayerObjs[i].time.split(':').map(Number);
+                    const pTime = h * 60 + m;
+                    if (nowMin < pTime) {
+                        nextRowId = prayerObjs[i].id;
+                        break;
+                    }
+                }
+
+                const row = document.getElementById(nextRowId);
+                if (row) row.classList.add('highlight');
+            }
+
+            // --- COUNTDOWN LOGIC ---
+            function checkPrayerCountdown() {
+                if (!APP_CONFIG.dailyPrayers) return;
+
+                const now = new Date();
+                const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+                // Check each prayer Jamat
+                const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+                let activeCountdown = null;
+                let activeSilent = null;
+
+                prayers.forEach(p => {
+                    if (!APP_CONFIG.dailyPrayers[p]) return;
+
+                    const cfg = APP_CONFIG.dailyPrayers[p];
+                    const jamatSec = cfg.h * 3600 + cfg.m * 60;
+
+                    const diff = jamatSec - nowSec;
+
+                    // TRIGGER: 15 mins (900s) before Jamat
+                    if (diff > 0 && diff <= 900) {
+                        activeCountdown = { prayer: p, diff: diff };
+                    }
+
+                    // SILENT: 0 to 5 mins (300s) AFTER Jamat (i.e. diff is negative)
+                    if (diff <= 0 && diff >= -300) {
+                        activeSilent = true;
+                    }
+                });
+
+                const countdownOverlay = document.getElementById('countdown-overlay');
+                const silentOverlay = document.getElementById('silent-overlay');
+                const slideshowContainer = document.getElementById('slideshow-container');
+                const overlayTimer = document.getElementById('overlay-timer');
+                const overlayName = document.getElementById('overlay-prayer-name');
+
+                if (activeSilent) {
+                    // Show Silent
+                    silentOverlay.style.display = 'flex';
+                    countdownOverlay.style.display = 'none';
+                    slideshowContainer.style.opacity = '0';
+                }
+                else if (activeCountdown) {
+                    // Show Countdown
+                    silentOverlay.style.display = 'none';
+                    countdownOverlay.style.display = 'flex';
+                    slideshowContainer.style.opacity = '0';
+
+                    // Update Timer
+                    const m = Math.floor(activeCountdown.diff / 60).toString().padStart(2, '0');
+                    const s = (activeCountdown.diff % 60).toString().padStart(2, '0');
+                    overlayTimer.innerText = `${m}:${s}`;
+
+                    // Capitalize first letter
+                    overlayName.innerText = activeCountdown.prayer.charAt(0).toUpperCase() + activeCountdown.prayer.slice(1);
+                }
+                else {
+                    // Show Slideshow
+                    silentOverlay.style.display = 'none';
+                    countdownOverlay.style.display = 'none';
+                    slideshowContainer.style.opacity = '1';
+                }
+            }
+
+            // Start App
+            initApp();
+        </script>
 </body>
 
 </html>
