@@ -1339,31 +1339,6 @@
             <div class="progress-bar" id="slide-progress"></div>
             <div id="loading-message">Connecting to Cloud System...</div>
 
-            <div class="slide static-slide" style="background: #050505;">
-                <div class="slide-overlay">
-                    <div class="slide-text">
-                        <div
-                            style="font-size: 7rem; margin-bottom: 20px; color: #ff6b6b; text-shadow: 0 0 30px rgba(255,107,107,0.4);">
-                            <i class="fas fa-mobile-screen-button" style="text-decoration: line-through;"></i>
-                        </div>
-                        <h2 style="color: #ff6b6b;">Mobile Phones <span style="font-family: var(--font-urdu); font-size: 0.75em; display: block; margin-top: 4px;">موبائل فون</span></h2>
-                        <p>Please switch your phone to silent mode.<span style="font-family: var(--font-urdu); font-size: 0.85em; display: block; margin-top: 6px; direction: rtl;">براہ کرم اپنا فون خاموش رکھیں</span></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="slide static-slide" style="background: radial-gradient(circle, #203a43, #0f2027);">
-                <div class="slide-overlay">
-                    <div class="slide-text">
-                        <div style="font-size: 4rem; color: var(--gold-light); margin-bottom: 10px;">
-                            <i class="fas fa-hand-holding-heart"></i>
-                        </div>
-                        <h2 style="color: var(--gold-light);">Donate Generously <span style="font-family: var(--font-urdu); font-size: 0.75em; display: block; margin-top: 4px;">فراخدلی سے عطیہ کریں</span></h2>
-                        <p style="color: var(--gold-primary); font-size: 1.6rem; font-style: italic;">"Charity does not decrease wealth"<span style="font-family: var(--font-urdu); font-size: 0.75em; display: block; margin-top: 6px; direction: rtl; font-style: normal;">صدقہ مال کو کم نہیں کرتا</span></p>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
 
@@ -1480,8 +1455,6 @@
             const slideshowContainer = document.getElementById('slideshow-container');
             const progressBar = document.getElementById('slide-progress');
             const loadingMessage = document.getElementById('loading-message');
-            const staticSlides = Array.from(document.querySelectorAll('.static-slide'));
-
             // --- STATE VARIABLES ---
             let currentAnimationFrame = null;
             let dynamicSlides = [];
@@ -1533,6 +1506,62 @@
             }
 
             /**
+             * Builds the inner HTML for a built-in (silent/donate) slide from its config.
+             */
+            function buildBuiltinSlideHTML(slide) {
+                if (slide.subtype === 'silent') {
+                    return `<div class="slide-overlay"><div class="slide-text">
+                        <div style="font-size:7rem;margin-bottom:20px;color:#ff6b6b;text-shadow:0 0 30px rgba(255,107,107,0.4);">
+                            <i class="fas fa-mobile-screen-button" style="text-decoration:line-through;"></i>
+                        </div>
+                        <h2 style="color:#ff6b6b;">${escapeHtml(slide.titleEn || 'Mobile Phones')}
+                            <span style="font-family:var(--font-urdu);font-size:0.75em;display:block;margin-top:4px;">${escapeHtml(slide.titleUr || '\u0645\u0648\u0628\u0627\u0626\u0644 \u0641\u0648\u0646')}</span>
+                        </h2>
+                        <p>${escapeHtml(slide.bodyEn || 'Please switch your phone to silent mode.')}
+                            <span style="font-family:var(--font-urdu);font-size:0.85em;display:block;margin-top:6px;direction:rtl;">${escapeHtml(slide.bodyUr || '\u0628\u0631\u0627\u06c1 \u06a9\u0631\u0645 \u0627\u067e\u0646\u0627 \u0641\u0648\u0646 \u062e\u0627\u0645\u0648\u0634 \u0631\u06a9\u06be\u06cc\u06ba')}</span>
+                        </p>
+                    </div></div>`;
+                }
+                if (slide.subtype === 'donate') {
+                    return `<div class="slide-overlay"><div class="slide-text">
+                        <div style="font-size:4rem;color:var(--gold-light);margin-bottom:10px;">
+                            <i class="fas fa-hand-holding-heart"></i>
+                        </div>
+                        <h2 style="color:var(--gold-light);">${escapeHtml(slide.titleEn || 'Donate Generously')}
+                            <span style="font-family:var(--font-urdu);font-size:0.75em;display:block;margin-top:4px;">${escapeHtml(slide.titleUr || '\u0641\u0631\u0627\u062e\u062f\u0644\u06cc \u0633\u06d2 \u0639\u0637\u06cc\u06c1 \u06a9\u0631\u06cc\u06ba')}</span>
+                        </h2>
+                        <p style="color:var(--gold-primary);font-size:1.6rem;font-style:italic;">${escapeHtml(slide.bodyEn || '"Charity does not decrease wealth"')}
+                            <span style="font-family:var(--font-urdu);font-size:0.75em;display:block;margin-top:6px;direction:rtl;font-style:normal;">${escapeHtml(slide.bodyUr || '\u0635\u062f\u0642\u06c1 \u0645\u0627\u0644 \u06a9\u0648 \u06a9\u0645 \u0646\u06c1\u06cc\u06ba \u06a9\u0631\u062a\u0627')}</span>
+                        </p>
+                    </div></div>`;
+                }
+                return '';
+            }
+
+            /**
+             * Seeds the two built-in slides into Firestore if they don't exist yet.
+             * Called once on display load so the display works even before admin visits.
+             */
+            function seedBuiltinSlides() {
+                db.collection('slides').doc('builtin-silent').get().then(doc => {
+                    if (!doc.exists) db.collection('slides').doc('builtin-silent').set({
+                        builtin: true, subtype: 'silent', visible: true, order: 998,
+                        titleEn: 'Mobile Phones', titleUr: '\u0645\u0648\u0628\u0627\u0626\u0644 \u0641\u0648\u0646',
+                        bodyEn: 'Please switch your phone to silent mode.',
+                        bodyUr: '\u0628\u0631\u0627\u06c1 \u06a9\u0631\u0645 \u0627\u067e\u0646\u0627 \u0641\u0648\u0646 \u062e\u0627\u0645\u0648\u0634 \u0631\u06a9\u06be\u06cc\u06ba'
+                    });
+                }).catch(() => {});
+                db.collection('slides').doc('builtin-donate').get().then(doc => {
+                    if (!doc.exists) db.collection('slides').doc('builtin-donate').set({
+                        builtin: true, subtype: 'donate', visible: true, order: 999,
+                        titleEn: 'Donate Generously', titleUr: '\u0641\u0631\u0627\u062e\u062f\u0644\u06cc \u0633\u06d2 \u0639\u0637\u06cc\u06c1 \u06a9\u0631\u06cc\u06ba',
+                        bodyEn: '"Charity does not decrease wealth"',
+                        bodyUr: '\u0635\u062f\u0642\u06c1 \u0645\u0627\u0644 \u06a9\u0648 \u06a9\u0645 \u0646\u06c1\u06cc\u06ba \u06a9\u0631\u062a\u0627'
+                    });
+                }).catch(() => {});
+            }
+
+            /**
              * Validates a time input value within a range
              * @param {string|number} value - The input value
              * @param {number} min - Minimum allowed value
@@ -1554,6 +1583,7 @@
              */
             function initApp() {
                 setupRealtimeListener(); // Connect to Cloud
+                seedBuiltinSlides();     // Ensure built-in slides exist in Firestore
 
                 updateClock();
                 setInterval(updateClock, CONSTANTS.CLOCK_UPDATE_INTERVAL);
@@ -1809,7 +1839,7 @@
                 // Stop existing animation
                 if (currentAnimationFrame) cancelAnimationFrame(currentAnimationFrame);
 
-                // Clear Dynamic Slides from DOM
+                // Clear previous slides from DOM
                 dynamicSlides.forEach(el => el.remove());
                 dynamicSlides = [];
 
@@ -1817,31 +1847,43 @@
                 const visibleSlides = APP_CONFIG.slides.filter(s => s.visible);
 
                 if (visibleSlides.length === 0) {
-                    loadingMessage.innerText = "Display Active";
-                    loadingMessage.style.display = 'none'; // Just hide loader, show static slides
-                    startSlideshowAnimation([...staticSlides]); // Animate static slides only
+                    loadingMessage.innerText = 'Display Active';
+                    loadingMessage.style.display = 'none';
+                    startSlideshowAnimation([]);
                     return;
                 }
 
-                loadingMessage.innerText = "Loading slides...";
+                loadingMessage.innerText = 'Loading slides...';
                 loadingMessage.style.display = 'block';
 
+                const slideElements = [];
+                // Only image (non-builtin) slides need async loading
+                const imageSlidesCount = visibleSlides.filter(s => !s.builtin).length;
                 let loadedCount = 0;
 
-                // Note: Since we need correct order, we will create elements first, then append.
-                const slideElements = [];
+                // Determine index of first non-builtin slide (for Welcome overlay)
+                const firstImageIdx = visibleSlides.findIndex(s => !s.builtin);
 
                 visibleSlides.forEach((slideItem, index) => {
                     const slideDiv = document.createElement('div');
                     slideDiv.className = 'slide';
 
+                    if (slideItem.builtin) {
+                        // Built-in slide: render immediately from text config
+                        const bg = slideItem.subtype === 'donate'
+                            ? 'radial-gradient(circle, #203a43, #0f2027)'
+                            : '#050505';
+                        slideDiv.style.background = bg;
+                        slideDiv.innerHTML = buildBuiltinSlideHTML(slideItem);
+                        slideElements.push(slideDiv);
+                        return; // no image to wait for
+                    }
+
                     const bgLayer = document.createElement('div');
                     bgLayer.className = 'slide-bg';
-
                     const contentLayer = document.createElement('div');
                     contentLayer.className = 'slide-content';
 
-                    // Image Loading Logic
                     const img = new Image();
                     img.onload = () => {
                         bgLayer.style.backgroundImage = `url('${slideItem.url}')`;
@@ -1857,37 +1899,37 @@
                     slideDiv.appendChild(bgLayer);
                     slideDiv.appendChild(contentLayer);
 
-                    // Add Welcome Overlay to First Slide
-                    if (index === 0) {
+                    // Add Welcome Overlay to first image slide
+                    if (index === firstImageIdx) {
                         const overlayDiv = document.createElement('div');
                         overlayDiv.className = 'slide-overlay';
                         overlayDiv.innerHTML = `
                         <div class="slide-text">
                             <h2>Welcome <span style="font-family: var(--font-urdu); font-size: 0.7em; display: block; margin-top: 4px;">خوش آمدید</span></h2>
                             <p>To Faizan-E-Madinah & Education Center<span style="font-family: var(--font-urdu); font-size: 0.8em; display: block; margin-top: 6px; direction: rtl;">فیضانِ مدینہ اینڈ ایجوکیشن سینٹر</span></p>
-                        </div>
-                     `;
+                        </div>`;
                         slideDiv.appendChild(overlayDiv);
                     }
 
                     slideElements.push(slideDiv);
                 });
 
+                function finalize() {
+                    loadingMessage.style.display = 'none';
+                    slideElements.forEach(el => {
+                        slideshowContainer.appendChild(el);
+                        dynamicSlides.push(el);
+                    });
+                    startSlideshowAnimation([...dynamicSlides]);
+                }
+
                 function checkAllLoaded() {
                     loadedCount++;
-                    if (loadedCount === visibleSlides.length) {
-                        loadingMessage.style.display = 'none';
-
-                        // Add to DOM in order
-                        slideElements.forEach(el => {
-                            if (staticSlides.length > 0) slideshowContainer.insertBefore(el, staticSlides[0]);
-                            else slideshowContainer.appendChild(el);
-                            dynamicSlides.push(el);
-                        });
-
-                        startSlideshowAnimation([...dynamicSlides, ...staticSlides]);
-                    }
+                    if (loadedCount === imageSlidesCount) finalize();
                 }
+
+                // If there are no image slides (only builtins), finalize immediately
+                if (imageSlidesCount === 0) finalize();
             }
 
             /**
@@ -2173,4 +2215,3 @@
 </body>
 
 </html>
-
