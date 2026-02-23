@@ -270,6 +270,30 @@
             opacity: 0.5;
         }
 
+        /* Built-in slide icon thumbnail */
+        .builtin-slide-thumb {
+            width: 80px;
+            height: 50px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            flex-shrink: 0;
+        }
+
+        .builtin-badge {
+            display: inline-block;
+            font-size: 0.68rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.08);
+            color: var(--text-muted);
+            margin-left: 6px;
+            vertical-align: middle;
+            letter-spacing: 0.03em;
+        }
+
         /* Theme Grid */
         .theme-grid {
             display: grid;
@@ -1003,6 +1027,7 @@
                     updateStatsUI();
                 }
             });
+            ensureBuiltinSlides(); // Seed built-in slides if not yet in Firestore
             db.collection("slides").orderBy("order", "asc").onSnapshot((snapshot) => {
                 APP_CONFIG.slides = [];
                 snapshot.forEach((doc) => { APP_CONFIG.slides.push({ ...doc.data(), id: doc.id }); });
@@ -1122,31 +1147,70 @@
         }
 
         // --- SLIDE LOGIC ---
+        function escapeHtml(s) {
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+
         function renderSlideList() {
             const list = document.getElementById('admin-slide-list');
             list.innerHTML = '';
             APP_CONFIG.slides.forEach((slide, index) => {
                 const li = document.createElement('li');
                 li.className = `slide-item ${!slide.visible ? 'hidden-slide' : ''}`;
-                li.innerHTML = `
-                    <span style="font-family:monospace; color:var(--gold-primary);">${index + 1}</span>
-                    <img src="${slide.url}" class="slide-thumb">
-                    <span class="slide-url" title="${slide.url}">${slide.url}</span>
-                    <div class="slide-actions">
-                        <button class="icon-btn" onclick="toggleSlideVisible('${slide.id}', ${!slide.visible})" title="Toggle Visibility">
-                            <i class="fas ${slide.visible ? 'fa-eye' : 'fa-eye-slash'}"></i>
-                        </button>
-                        <button class="icon-btn" onclick="moveSlideUp(${index})" title="Move Up">
-                            <i class="fas fa-chevron-up"></i>
-                        </button>
-                        <button class="icon-btn" onclick="moveSlideDown(${index})" title="Move Down">
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <button class="icon-btn" onclick="deleteSlide('${slide.id}')" title="Delete" style="color:#ff6b6b">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `;
+
+                if (slide.builtin) {
+                    const icon  = slide.subtype === 'silent' ? 'fa-mobile-screen-button' : 'fa-hand-holding-heart';
+                    const color = slide.subtype === 'silent' ? '#ff6b6b' : 'var(--gold-light)';
+                    const bg    = slide.subtype === 'donate'
+                        ? 'background:radial-gradient(circle,#203a43,#0f2027);'
+                        : 'background:#050505;';
+                    li.innerHTML = `
+                        <span style="font-family:monospace;color:var(--gold-primary);">${index + 1}</span>
+                        <div class="builtin-slide-thumb" style="${bg}">
+                            <i class="fas ${icon}" style="color:${color};"></i>
+                        </div>
+                        <span class="slide-url">${escapeHtml(slide.titleEn || 'Built-in Slide')}
+                            <span class="builtin-badge">Built-in</span>
+                        </span>
+                        <div class="slide-actions">
+                            <button class="icon-btn" onclick="openBuiltinEditModal('${slide.id}')" title="Edit Text" style="color:var(--gold-primary);">
+                                <i class="fas fa-pencil"></i>
+                            </button>
+                            <button class="icon-btn" onclick="toggleSlideVisible('${slide.id}', ${!slide.visible})" title="Toggle Visibility">
+                                <i class="fas ${slide.visible ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                            </button>
+                            <button class="icon-btn" onclick="moveSlideUp(${index})" title="Move Up">
+                                <i class="fas fa-chevron-up"></i>
+                            </button>
+                            <button class="icon-btn" onclick="moveSlideDown(${index})" title="Move Down">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <button class="icon-btn" onclick="deleteSlide('${slide.id}')" title="Delete" style="color:#ff6b6b">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>`;
+                } else {
+                    li.innerHTML = `
+                        <span style="font-family:monospace;color:var(--gold-primary);">${index + 1}</span>
+                        <img src="${slide.url}" class="slide-thumb">
+                        <span class="slide-url" title="${slide.url}">${slide.url}</span>
+                        <div class="slide-actions">
+                            <button class="icon-btn" onclick="toggleSlideVisible('${slide.id}', ${!slide.visible})" title="Toggle Visibility">
+                                <i class="fas ${slide.visible ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                            </button>
+                            <button class="icon-btn" onclick="moveSlideUp(${index})" title="Move Up">
+                                <i class="fas fa-chevron-up"></i>
+                            </button>
+                            <button class="icon-btn" onclick="moveSlideDown(${index})" title="Move Down">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <button class="icon-btn" onclick="deleteSlide('${slide.id}')" title="Delete" style="color:#ff6b6b">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>`;
+                }
                 list.appendChild(li);
             });
         }
@@ -1229,6 +1293,57 @@
             }
         }
 
+        // --- BUILT-IN SLIDE MANAGEMENT ---
+        function ensureBuiltinSlides() {
+            db.collection('slides').doc('builtin-silent').get().then(doc => {
+                if (!doc.exists) db.collection('slides').doc('builtin-silent').set({
+                    builtin: true, subtype: 'silent', visible: true, order: 998,
+                    titleEn: 'Mobile Phones', titleUr: '\u0645\u0648\u0628\u0627\u0626\u0644 \u0641\u0648\u0646',
+                    bodyEn: 'Please switch your phone to silent mode.',
+                    bodyUr: '\u0628\u0631\u0627\u06c1 \u06a9\u0631\u0645 \u0627\u067e\u0646\u0627 \u0641\u0648\u0646 \u062e\u0627\u0645\u0648\u0634 \u0631\u06a9\u06be\u06cc\u06ba'
+                });
+            }).catch(() => {});
+            db.collection('slides').doc('builtin-donate').get().then(doc => {
+                if (!doc.exists) db.collection('slides').doc('builtin-donate').set({
+                    builtin: true, subtype: 'donate', visible: true, order: 999,
+                    titleEn: 'Donate Generously', titleUr: '\u0641\u0631\u0627\u062e\u062f\u0644\u06cc \u0633\u06d2 \u0639\u0637\u06cc\u06c1 \u06a9\u0631\u06cc\u06ba',
+                    bodyEn: '"Charity does not decrease wealth"',
+                    bodyUr: '\u0635\u062f\u0642\u06c1 \u0645\u0627\u0644 \u06a9\u0648 \u06a9\u0645 \u0646\u06c1\u06cc\u06ba \u06a9\u0631\u062a\u0627'
+                });
+            }).catch(() => {});
+        }
+
+        function openBuiltinEditModal(slideId) {
+            const slide = APP_CONFIG.slides.find(s => s.id === slideId);
+            if (!slide) return;
+            document.getElementById('builtin-edit-id').value = slide.id;
+            document.getElementById('builtin-edit-titleEn').value = slide.titleEn || '';
+            document.getElementById('builtin-edit-titleUr').value = slide.titleUr || '';
+            document.getElementById('builtin-edit-bodyEn').value = slide.bodyEn || '';
+            document.getElementById('builtin-edit-bodyUr').value = slide.bodyUr || '';
+            document.getElementById('builtin-edit-modal').style.display = 'flex';
+        }
+
+        function closeBuiltinEditModal() {
+            document.getElementById('builtin-edit-modal').style.display = 'none';
+        }
+
+        function saveBuiltinSlide() {
+            const id = document.getElementById('builtin-edit-id').value;
+            const updates = {
+                titleEn: document.getElementById('builtin-edit-titleEn').value.trim(),
+                titleUr: document.getElementById('builtin-edit-titleUr').value.trim(),
+                bodyEn:  document.getElementById('builtin-edit-bodyEn').value.trim(),
+                bodyUr:  document.getElementById('builtin-edit-bodyUr').value.trim(),
+            };
+            const btn = document.getElementById('builtin-save-btn');
+            btn.disabled = true; btn.textContent = 'Saving...';
+            db.collection('slides').doc(id).update(updates)
+                .then(() => closeBuiltinEditModal())
+                .catch(err => alert('Save failed: ' + err.message))
+                .finally(() => { btn.disabled = false; btn.textContent = 'Save Changes'; });
+        }
+
         function toggleSlideVisible(id, newState) {
             db.collection("slides").doc(id).update({ visible: newState });
         }
@@ -1283,6 +1398,12 @@
             // Show/hide custom colour picker row
             const row = document.getElementById('custom-color-row');
             if (row) row.classList.toggle('visible', theme === 'custom');
+            // Recolour admin UI
+            if (theme === 'custom') {
+                applyAdminThemeColors(APP_CONFIG.customColor || '#7c3aed');
+            } else {
+                revertAdminThemeColors();
+            }
         }
 
         // --- CUSTOM COLOUR HELPERS (admin) ---
@@ -1304,6 +1425,32 @@
         function onCustomColorChange(hex) {
             APP_CONFIG.customColor = hex;
             updateCustomPreviewBar(hex);
+            // Recolour admin UI live
+            if (APP_CONFIG.theme === 'custom') {
+                applyAdminThemeColors(hex);
+            }
+        }
+
+        // Apply custom hex colour to the admin UI CSS variables
+        function applyAdminThemeColors(hex) {
+            const r = parseInt(hex.slice(1,3), 16);
+            const g = parseInt(hex.slice(3,5), 16);
+            const b = parseInt(hex.slice(5,7), 16);
+            const toHex = v => Math.min(255, Math.round(v)).toString(16).padStart(2, '0');
+            const light = '#' + [r+(255-r)*0.55, g+(255-g)*0.55, b+(255-b)*0.55].map(toHex).join('');
+            const dark  = '#' + [r*0.62, g*0.62, b*0.62].map(toHex).join('');
+            const root = document.documentElement;
+            root.style.setProperty('--gold-primary', hex);
+            root.style.setProperty('--gold-light',   light);
+            root.style.setProperty('--gold-dark',    dark);
+        }
+
+        // Reset admin UI to original gold defaults
+        function revertAdminThemeColors() {
+            const root = document.documentElement;
+            root.style.removeProperty('--gold-primary');
+            root.style.removeProperty('--gold-light');
+            root.style.removeProperty('--gold-dark');
         }
 
         function selectLayout(layout) {
@@ -1382,5 +1529,36 @@
     </script>
 </body>
 
-</html>
+<!-- BUILT-IN SLIDE EDIT MODAL -->
+<div id="builtin-edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:500;align-items:center;justify-content:center;">
+    <div style="background:#131518;border:1px solid var(--gold-primary);border-radius:16px;padding:30px;width:500px;max-width:96vw;box-shadow:0 24px 70px rgba(0,0,0,0.85);">
+        <h3 style="color:var(--gold-primary);margin:0 0 22px;font-size:1.05rem;font-family:var(--font-main);">
+            <i class="fas fa-pencil" style="margin-right:8px;"></i>Edit Built-in Slide
+        </h3>
+        <input type="hidden" id="builtin-edit-id">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+            <div>
+                <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:5px;">Title (English)</label>
+                <input type="text" id="builtin-edit-titleEn" style="width:100%;box-sizing:border-box;padding:10px 12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-family:var(--font-main);font-size:0.95rem;" placeholder="e.g. Mobile Phones">
+            </div>
+            <div>
+                <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:5px;">Title (Urdu) اردو عنوان</label>
+                <input type="text" id="builtin-edit-titleUr" dir="rtl" style="width:100%;box-sizing:border-box;padding:10px 12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-family:var(--font-arabic);font-size:1rem;text-align:right;" placeholder="مثال: موبائل فون">
+            </div>
+            <div>
+                <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:5px;">Body Text (English)</label>
+                <input type="text" id="builtin-edit-bodyEn" style="width:100%;box-sizing:border-box;padding:10px 12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-family:var(--font-main);font-size:0.95rem;" placeholder="e.g. Please switch your phone to silent mode.">
+            </div>
+            <div>
+                <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:5px;">Body Text (Urdu) اردو متن</label>
+                <input type="text" id="builtin-edit-bodyUr" dir="rtl" style="width:100%;box-sizing:border-box;padding:10px 12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-family:var(--font-arabic);font-size:1rem;text-align:right;" placeholder="مثال: براہ کرم اپنا فون خاموش رکھیں">
+            </div>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:26px;">
+            <button onclick="closeBuiltinEditModal()" style="padding:10px 22px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:#fff;cursor:pointer;font-size:0.9rem;">Cancel</button>
+            <button id="builtin-save-btn" onclick="saveBuiltinSlide()" style="padding:10px 26px;border-radius:8px;border:none;background:var(--gold-primary);color:#000;cursor:pointer;font-weight:700;font-size:0.9rem;">Save Changes</button>
+        </div>
+    </div>
+</div>
 
+</html>
