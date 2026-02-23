@@ -1440,36 +1440,41 @@
             const toHex = v => Math.min(255, Math.round(v)).toString(16).padStart(2, '0');
             const light   = '#' + [r+(255-r)*0.55, g+(255-g)*0.55, b+(255-b)*0.55].map(toHex).join('');
             const dark    = '#' + [r*0.62, g*0.62, b*0.62].map(toHex).join('');
-            const bgDark  = '#' + [r*0.07+6, g*0.07+6, b*0.07+8].map(v=>Math.min(255,Math.round(v)).toString(16).padStart(2,'0')).join('');
-            const bgDark2 = '#' + [r*0.04+3, g*0.04+3, b*0.04+4].map(v=>Math.min(255,Math.round(v)).toString(16).padStart(2,'0')).join('');
-            let el = document.getElementById('admin-custom-theme-css');
-            if (!el) {
-                el = document.createElement('style');
-                el.id = 'admin-custom-theme-css';
-                document.head.appendChild(el);
+            const bgDark  = '#' + [Math.round(r*0.07+6), Math.round(g*0.07+6), Math.round(b*0.07+8)].map(v=>Math.min(255,v).toString(16).padStart(2,'0')).join('');
+            const bgDark2 = '#' + [Math.round(r*0.04+3), Math.round(g*0.04+3), Math.round(b*0.04+4)].map(v=>Math.min(255,v).toString(16).padStart(2,'0')).join('');
+            // Inline styles on <html> have highest specificity — always win over any stylesheet :root block
+            const root = document.documentElement;
+            root.style.setProperty('--gold-primary', hex);
+            root.style.setProperty('--gold-light',   light);
+            root.style.setProperty('--gold-dark',    dark);
+            root.style.setProperty('--bg-dark',      bgDark);
+            root.style.setProperty('--bg-gradient',
+                `linear-gradient(145deg, rgba(${r},${g},${b},0.22) 0%, ${bgDark} 35%, ${bgDark2} 100%)`);
+            // Also set body background directly in case var() isn't re-evaluated fast enough
+            document.body.style.background =
+                `linear-gradient(145deg, rgba(${r},${g},${b},0.22) 0%, ${bgDark} 35%, ${bgDark2} 100%)`;
+            // Update container border/glow
+            const container = document.querySelector('.admin-container');
+            if (container) {
+                container.style.borderColor = hex;
+                container.style.boxShadow = `0 0 60px rgba(${r},${g},${b},0.3)`;
             }
-            // Injected style comes after the original <style> block → cascade wins
-            el.textContent = `
-                :root {
-                    --gold-primary: ${hex};
-                    --gold-light:   ${light};
-                    --gold-dark:    ${dark};
-                    --bg-dark:      ${bgDark};
-                    --bg-gradient:  linear-gradient(145deg,
-                        rgba(${r},${g},${b},0.18) 0%,
-                        ${bgDark} 30%, ${bgDark2} 100%);
-                }
-                .admin-container {
-                    border-color: ${hex};
-                    box-shadow: 0 0 60px rgba(${r},${g},${b},0.25);
-                }
-            `;
         }
 
         // Reset admin UI to original gold defaults
         function revertAdminThemeColors() {
-            const el = document.getElementById('admin-custom-theme-css');
-            if (el) el.textContent = '';
+            const root = document.documentElement;
+            root.style.removeProperty('--gold-primary');
+            root.style.removeProperty('--gold-light');
+            root.style.removeProperty('--gold-dark');
+            root.style.removeProperty('--bg-dark');
+            root.style.removeProperty('--bg-gradient');
+            document.body.style.background = '';
+            const container = document.querySelector('.admin-container');
+            if (container) {
+                container.style.borderColor = '';
+                container.style.boxShadow = '';
+            }
         }
 
         function selectLayout(layout) {
