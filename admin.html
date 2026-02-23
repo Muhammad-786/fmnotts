@@ -1398,10 +1398,18 @@
             // Show/hide custom colour picker row
             const row = document.getElementById('custom-color-row');
             if (row) row.classList.toggle('visible', theme === 'custom');
-            // Recolour admin UI
+            
+            // Recolour admin UI based on selected theme
             if (theme === 'custom') {
                 applyAdminThemeColors(APP_CONFIG.customColor || '#7c3aed');
+            } else if (theme === 'emerald') {
+                applyAdminThemeColors('#10b981');
+            } else if (theme === 'royal') {
+                applyAdminThemeColors('#3b82f6');
+            } else if (theme === 'rose') {
+                applyAdminThemeColors('#f43f5e');
             } else {
+                // Gold (default)
                 revertAdminThemeColors();
             }
         }
