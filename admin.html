@@ -338,6 +338,51 @@
             text-align: center;
         }
 
+        /* Custom color picker card */
+        .custom-color-card {
+            position: relative;
+        }
+
+        .custom-color-picker-row {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .custom-color-picker-row.visible {
+            display: flex;
+        }
+
+        .color-swatch-preview {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 2px solid rgba(255,255,255,0.2);
+            flex-shrink: 0;
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 44px;
+            height: 44px;
+            border: none;
+            padding: 0;
+            background: none;
+            cursor: pointer;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border-radius: 6px; border: 2px solid rgba(255,255,255,0.15); }
+
         .layout-preview {
             height: 50px;
             display: flex;
@@ -363,6 +408,122 @@
             font-size: 3rem;
             color: var(--gold-primary);
             margin-bottom: 20px;
+        }
+
+        /* --- WEEK TABS --- */
+        .week-tabs {
+            display: flex;
+            gap: 5px;
+            margin: 10px 0 15px;
+            flex-wrap: wrap;
+        }
+
+        .week-tab-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 9px 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-family: var(--font-main);
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .week-tab-btn.active {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--gold-primary);
+            color: var(--gold-primary);
+        }
+
+        .week-tab-btn small {
+            font-size: 0.68rem;
+            opacity: 0.75;
+        }
+
+        .week-tab-btn.current-week {
+            position: relative;
+        }
+
+        .week-tab-btn.current-week::after {
+            content: '\25CF';
+            position: absolute;
+            top: 4px;
+            right: 6px;
+            font-size: 7px;
+            color: #4ade80;
+        }
+
+        .week-content {
+            display: none;
+        }
+
+        .week-content.active {
+            display: block;
+        }
+
+        /* --- PRAYER TIMETABLE --- */
+        .timetable-wrap {
+            overflow-x: auto;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            max-height: 340px;
+            overflow-y: auto;
+        }
+
+        .timetable {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+        }
+
+        .timetable th {
+            background: rgba(212, 175, 55, 0.12);
+            color: var(--gold-primary);
+            padding: 8px 10px;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+        }
+
+        .timetable th:first-child { text-align: left; }
+
+        .timetable td {
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            text-align: center;
+            color: #ccc;
+            white-space: nowrap;
+        }
+
+        .timetable td:first-child { text-align: left; color: #fff; }
+
+        .timetable tr:hover td { background: rgba(255, 255, 255, 0.03); }
+
+        .timetable .week-badge {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--gold-primary);
+            border-radius: 4px;
+            padding: 1px 5px;
+            font-size: 0.68rem;
+        }
+
+        .timetable tr.today-row td {
+            background: rgba(212, 175, 55, 0.08);
+            color: #fff;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -452,55 +613,61 @@
                         </div>
                     </div>
 
+                    <div class="form-group" style="background:rgba(255,255,255,0.03); padding:15px; border-radius:10px; border:1px solid rgba(255,255,255,0.08);">
+                        <label><i class="fas fa-hourglass-half" style="color:var(--gold-primary);"></i> Countdown Before Jamat <span style="color:var(--text-muted); font-size:0.8rem; font-weight:400;"> &mdash; minutes before Jamaat to show countdown overlay</span></label>
+                        <input type="number" id="input-countdown-mins" class="form-control" min="1" max="60" placeholder="15" style="max-width:120px; margin-top:8px;">
+                    </div>
 
-                    <h3
-                        style="margin: 20px 0 10px; color: var(--gold-light); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-                        Daily Prayers (Jamat Times)</h3>
-                    <div class="form-group">
-                        <label>Fajr Jamat (HH:MM)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="number" id="input-fajr-h" class="form-control" min="0" max="23"
-                                placeholder="HH">
-                            <input type="number" id="input-fajr-m" class="form-control" min="0" max="59"
-                                placeholder="MM">
-                        </div>
+                    <h3 style="margin:20px 0 5px; color:var(--gold-light); border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
+                        Daily Prayers &mdash; Jamat Times (4-Week Schedule)</h3>
+                    <p style="color:var(--text-muted); font-size:0.82rem; margin:0 0 12px;">
+                        Set different jamat times per week of the month.<br>
+                        <span style="color:#4ade80;">&#9679;</span> marks the current week. The display automatically uses the matching week.
+                    </p>
+
+                    <div class="week-tabs">
+                        <button class="week-tab-btn active" onclick="switchWeekTab(0)">Week 1<small>1st &ndash; 7th</small></button>
+                        <button class="week-tab-btn" onclick="switchWeekTab(1)">Week 2<small>8th &ndash; 14th</small></button>
+                        <button class="week-tab-btn" onclick="switchWeekTab(2)">Week 3<small>15th &ndash; 21st</small></button>
+                        <button class="week-tab-btn" onclick="switchWeekTab(3)">Week 4<small>22nd &ndash; 31st</small></button>
                     </div>
-                    <div class="form-group">
-                        <label>Dhuhr Jamat (HH:MM)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="number" id="input-dhuhr-h" class="form-control" min="0" max="23"
-                                placeholder="HH">
-                            <input type="number" id="input-dhuhr-m" class="form-control" min="0" max="59"
-                                placeholder="MM">
-                        </div>
+
+                    <!-- WEEK 1 -->
+                    <div id="week-tab-0" class="week-content active">
+                        <div class="form-group"><label>Fajr Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w0-fajr-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w0-fajr-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Dhuhr Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w0-dhuhr-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w0-dhuhr-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Asr Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w0-asr-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w0-asr-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Maghrib Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w0-maghrib-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w0-maghrib-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Isha Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w0-isha-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w0-isha-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
                     </div>
-                    <div class="form-group">
-                        <label>Asr Jamat (HH:MM)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="number" id="input-asr-h" class="form-control" min="0" max="23"
-                                placeholder="HH">
-                            <input type="number" id="input-asr-m" class="form-control" min="0" max="59"
-                                placeholder="MM">
-                        </div>
+
+                    <!-- WEEK 2 -->
+                    <div id="week-tab-1" class="week-content">
+                        <div class="form-group"><label>Fajr Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w1-fajr-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w1-fajr-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Dhuhr Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w1-dhuhr-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w1-dhuhr-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Asr Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w1-asr-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w1-asr-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Maghrib Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w1-maghrib-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w1-maghrib-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Isha Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w1-isha-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w1-isha-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
                     </div>
-                    <div class="form-group">
-                        <label>Maghrib Jamat (HH:MM)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="number" id="input-maghrib-h" class="form-control" min="0" max="23"
-                                placeholder="HH">
-                            <input type="number" id="input-maghrib-m" class="form-control" min="0" max="59"
-                                placeholder="MM">
-                        </div>
+
+                    <!-- WEEK 3 -->
+                    <div id="week-tab-2" class="week-content">
+                        <div class="form-group"><label>Fajr Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w2-fajr-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w2-fajr-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Dhuhr Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w2-dhuhr-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w2-dhuhr-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Asr Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w2-asr-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w2-asr-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Maghrib Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w2-maghrib-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w2-maghrib-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Isha Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w2-isha-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w2-isha-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
                     </div>
-                    <div class="form-group">
-                        <label>Isha Jamat (HH:MM)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="number" id="input-isha-h" class="form-control" min="0" max="23"
-                                placeholder="HH">
-                            <input type="number" id="input-isha-m" class="form-control" min="0" max="59"
-                                placeholder="MM">
-                        </div>
+
+                    <!-- WEEK 4 -->
+                    <div id="week-tab-3" class="week-content">
+                        <div class="form-group"><label>Fajr Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w3-fajr-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w3-fajr-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Dhuhr Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w3-dhuhr-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w3-dhuhr-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Asr Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w3-asr-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w3-asr-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Maghrib Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w3-maghrib-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w3-maghrib-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
+                        <div class="form-group"><label>Isha Jamat</label><div style="display:flex;gap:10px;"><input type="number" id="w3-isha-h" class="form-control" min="0" max="23" placeholder="HH"><input type="number" id="w3-isha-m" class="form-control" min="0" max="59" placeholder="MM"></div></div>
                     </div>
+
                 </div>
 
                 <!-- 2. SLIDES -->
@@ -578,6 +745,27 @@
                             </div>
                             <div class="theme-name">Rose Dawn</div>
                         </div>
+                        <!-- Custom Color Picker -->
+                        <div class="theme-card custom-color-card" data-theme="custom" onclick="selectTheme('custom')">
+                            <div class="theme-preview" id="custom-theme-preview">
+                                <div class="theme-preview-bar" id="custom-preview-bar"
+                                    style="background: linear-gradient(135deg, #111 0%, #1a1a2e 30%, #7c3aed 50%, #c4b5fd 70%, #5b21b6 100%);">
+                                </div>
+                            </div>
+                            <div class="theme-name">Custom Color</div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Color Picker Row (shown when Custom selected) -->
+                    <div class="custom-color-picker-row" id="custom-color-row">
+                        <input type="color" id="input-custom-color" value="#7c3aed"
+                            oninput="onCustomColorChange(this.value)"
+                            title="Pick your brand color">
+                        <div id="custom-color-swatch" class="color-swatch-preview" style="background:#7c3aed;"></div>
+                        <div>
+                            <div style="font-size:0.85rem; color:var(--text-white); font-weight:600;">Pick any colour</div>
+                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">The display will auto-compute a full cohesive theme from your chosen colour.</div>
+                        </div>
                     </div>
 
                     <label style="margin-top: 25px; display: block;">Layout Style</label>
@@ -632,7 +820,7 @@
                 <!-- 4. API SETTINGS -->
                 <div id="tab-api" class="tab-content">
                     <p style="color: var(--gold-primary); margin-bottom: 20px;">
-                        <i class="fas fa-satellite-dish"></i> Prayer Times
+                        <i class="fas fa-satellite-dish"></i> Prayer Times provided by Aladhan API
                     </p>
                     <div class="form-group">
                         <label>City</label>
@@ -663,6 +851,21 @@
                             <option value="1">Hanafi</option>
                         </select>
                     </div>
+
+                    <div style="margin-top:25px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <div>
+                                <div style="font-weight:600; color:var(--text-white);"><i class="fas fa-table" style="color:var(--gold-primary);"></i> Prayer Timetable Preview</div>
+                                <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">Begins times from Aladhan for this month &mdash; W1&ndash;W4 shows which week config applies</div>
+                            </div>
+                            <button class="btn btn-secondary" onclick="loadTimetable()" id="btn-load-timetable" style="padding:8px 14px; font-size:0.82rem; white-space:nowrap;">
+                                <i class="fas fa-table"></i> Load
+                            </button>
+                        </div>
+                        <div id="timetable-container" style="display:none;">
+                            <div id="timetable-content"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- SAVE BUTTON -->
@@ -679,6 +882,9 @@
 
     <script>
         // --- FIREBASE CONFIGURATION ---
+        // SECURITY NOTE: For production deployment, consider using environment variables
+        // or Firebase Hosting with reserved URLs to protect these credentials.
+        // See instructions.md for more details on securing your Firebase config.
         const firebaseConfig = {
             apiKey: "AIzaSyCirBPRHp02zVZFUp5F1t42xm0jEmZeiEc",
             authDomain: "mosquedisplay-eab43.firebaseapp.com",
@@ -701,9 +907,13 @@
             MAX_IMAGE_WIDTH: 800
         };
 
+        const WEEK_DEFAULT = { fajr:{h:6,m:0}, dhuhr:{h:13,m:0}, asr:{h:16,m:30}, maghrib:{h:18,m:0}, isha:{h:20,m:30} };
+
         const DEFAULT_CONFIG = {
             theme: 'gold',
             layout: 'classic',
+            countdownMinutes: 15,
+            customColor: '#7c3aed',
             jummah: {
                 dayIndex: CONSTANTS.FRIDAY_DAY_INDEX,
                 startDisplayHour: 10, startDisplayMinute: 0,
@@ -713,16 +923,13 @@
                 postPrayerEndHour: 15, postPrayerEndMinute: 0
             },
             slides: [],
-            prayerConfig: {
-                city: "Ravensthorpe", country: "UK", method: 3, school: 1
-            },
-            dailyPrayers: {
-                fajr: { h: 6, m: 0 },
-                dhuhr: { h: 13, m: 0 },
-                asr: { h: 16, m: 30 },
-                maghrib: { h: 18, m: 0 },
-                isha: { h: 20, m: 30 }
-            }
+            prayerConfig: { city: "Ravensthorpe", country: "UK", method: 3, school: 1 },
+            weeklyPrayers: [
+                JSON.parse(JSON.stringify(WEEK_DEFAULT)),
+                JSON.parse(JSON.stringify(WEEK_DEFAULT)),
+                JSON.parse(JSON.stringify(WEEK_DEFAULT)),
+                JSON.parse(JSON.stringify(WEEK_DEFAULT))
+            ]
         };
 
         let APP_CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
@@ -776,7 +983,6 @@
 
         // --- SETTINGS MANAGEMENT ---
         function loadSettings() {
-            // Load Settings
             db.collection("mosque_data").doc("settings").get().then((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
@@ -784,24 +990,28 @@
                     APP_CONFIG.theme = data.theme || DEFAULT_CONFIG.theme;
                     APP_CONFIG.layout = data.layout || DEFAULT_CONFIG.layout;
                     APP_CONFIG.prayerConfig = data.prayerConfig || DEFAULT_CONFIG.prayerConfig;
-                    APP_CONFIG.dailyPrayers = data.dailyPrayers || DEFAULT_CONFIG.dailyPrayers;
-
+                    APP_CONFIG.countdownMinutes = (data.countdownMinutes !== undefined) ? data.countdownMinutes : 15;
+                    APP_CONFIG.customColor = data.customColor || '#7c3aed';
+                    // Support new weeklyPrayers; migrate from old dailyPrayers if needed
+                    if (data.weeklyPrayers && Array.isArray(data.weeklyPrayers) && data.weeklyPrayers.length === 4) {
+                        APP_CONFIG.weeklyPrayers = data.weeklyPrayers;
+                    } else if (data.dailyPrayers) {
+                        APP_CONFIG.weeklyPrayers = [0,1,2,3].map(() => JSON.parse(JSON.stringify(data.dailyPrayers)));
+                    } else {
+                        APP_CONFIG.weeklyPrayers = JSON.parse(JSON.stringify(DEFAULT_CONFIG.weeklyPrayers));
+                    }
                     updateStatsUI();
                 }
             });
-
-            // Load Slides
             db.collection("slides").orderBy("order", "asc").onSnapshot((snapshot) => {
                 APP_CONFIG.slides = [];
-                snapshot.forEach((doc) => {
-                    APP_CONFIG.slides.push({ ...doc.data(), id: doc.id });
-                });
+                snapshot.forEach((doc) => { APP_CONFIG.slides.push({ ...doc.data(), id: doc.id }); });
                 renderSlideList();
             });
         }
 
         function updateStatsUI() {
-            // Timings
+            // Jummah Timings
             document.getElementById('input-speech-h').value = APP_CONFIG.jummah.speechHour;
             document.getElementById('input-speech-m').value = APP_CONFIG.jummah.speechMinute;
             document.getElementById('input-khutbah-h').value = APP_CONFIG.jummah.khutbahHour;
@@ -810,6 +1020,15 @@
             document.getElementById('input-jamaat-m').value = APP_CONFIG.jummah.jamaatMinute;
             document.getElementById('input-start-h').value = APP_CONFIG.jummah.startDisplayHour;
             document.getElementById('input-start-m').value = APP_CONFIG.jummah.startDisplayMinute;
+            document.getElementById('input-countdown-mins').value = APP_CONFIG.countdownMinutes || 15;
+
+            // Custom colour
+            const cc = APP_CONFIG.customColor || '#7c3aed';
+            document.getElementById('input-custom-color').value = cc;
+            document.getElementById('custom-color-swatch').style.background = cc;
+            updateCustomPreviewBar(cc);
+            // Show picker row if custom is the active theme
+            document.getElementById('custom-color-row').classList.toggle('visible', APP_CONFIG.theme === 'custom');
 
             // API Settings
             if (APP_CONFIG.prayerConfig) {
@@ -817,25 +1036,26 @@
                 document.getElementById('api-country').value = APP_CONFIG.prayerConfig.country || '';
                 document.getElementById('api-method').value = APP_CONFIG.prayerConfig.method || 3;
                 document.getElementById('api-school').value = APP_CONFIG.prayerConfig.school || 1;
-                document.getElementById('api-school').value = APP_CONFIG.prayerConfig.school || 1;
             }
 
-            // Daily Prayers
-            if (APP_CONFIG.dailyPrayers) {
-                const dp = APP_CONFIG.dailyPrayers;
-                document.getElementById('input-fajr-h').value = dp.fajr.h;
-                document.getElementById('input-fajr-m').value = dp.fajr.m;
-                document.getElementById('input-dhuhr-h').value = dp.dhuhr.h;
-                document.getElementById('input-dhuhr-m').value = dp.dhuhr.m;
-                document.getElementById('input-asr-h').value = dp.asr.h;
-                document.getElementById('input-asr-m').value = dp.asr.m;
-                document.getElementById('input-maghrib-h').value = dp.maghrib.h;
-                document.getElementById('input-maghrib-m').value = dp.maghrib.m;
-                document.getElementById('input-isha-h').value = dp.isha.h;
-                document.getElementById('input-isha-m').value = dp.isha.m;
-            }
+            // Weekly Prayers
+            const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+            APP_CONFIG.weeklyPrayers.forEach((week, wi) => {
+                prayers.forEach(p => {
+                    const hEl = document.getElementById(`w${wi}-${p}-h`);
+                    const mEl = document.getElementById(`w${wi}-${p}-m`);
+                    if (hEl && week[p] !== undefined) hEl.value = week[p].h;
+                    if (mEl && week[p] !== undefined) mEl.value = week[p].m;
+                });
+            });
 
-            // visuals
+            // Mark current week tab with green dot
+            const day = new Date().getDate();
+            const currentWeekIdx = day <= 7 ? 0 : day <= 14 ? 1 : day <= 21 ? 2 : 3;
+            document.querySelectorAll('.week-tab-btn').forEach((btn, i) => {
+                btn.classList.toggle('current-week', i === currentWeekIdx);
+            });
+
             selectTheme(APP_CONFIG.theme);
             selectLayout(APP_CONFIG.layout);
         }
@@ -846,7 +1066,7 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
-            // Validate Timings
+            // Jummah timings
             APP_CONFIG.jummah.speechHour = parseInt(document.getElementById('input-speech-h').value) || 0;
             APP_CONFIG.jummah.speechMinute = parseInt(document.getElementById('input-speech-m').value) || 0;
             APP_CONFIG.jummah.khutbahHour = parseInt(document.getElementById('input-khutbah-h').value) || 0;
@@ -856,37 +1076,43 @@
             APP_CONFIG.jummah.startDisplayHour = parseInt(document.getElementById('input-start-h').value) || 0;
             APP_CONFIG.jummah.startDisplayMinute = parseInt(document.getElementById('input-start-m').value) || 0;
 
-            // Update Prayer Config
+            // Countdown minutes
+            APP_CONFIG.countdownMinutes = Math.max(1, parseInt(document.getElementById('input-countdown-mins').value) || 15);
+
+            // Custom colour
+            APP_CONFIG.customColor = document.getElementById('input-custom-color').value || '#7c3aed';
+
+            // Prayer API Config
             APP_CONFIG.prayerConfig.city = document.getElementById('api-city').value.trim();
             APP_CONFIG.prayerConfig.country = document.getElementById('api-country').value.trim();
             APP_CONFIG.prayerConfig.method = parseInt(document.getElementById('api-method').value);
             APP_CONFIG.prayerConfig.school = parseInt(document.getElementById('api-school').value);
 
-            // Update Daily Prayers
-            APP_CONFIG.dailyPrayers.fajr.h = parseInt(document.getElementById('input-fajr-h').value) || 0;
-            APP_CONFIG.dailyPrayers.fajr.m = parseInt(document.getElementById('input-fajr-m').value) || 0;
-            APP_CONFIG.dailyPrayers.dhuhr.h = parseInt(document.getElementById('input-dhuhr-h').value) || 0;
-            APP_CONFIG.dailyPrayers.dhuhr.m = parseInt(document.getElementById('input-dhuhr-m').value) || 0;
-            APP_CONFIG.dailyPrayers.asr.h = parseInt(document.getElementById('input-asr-h').value) || 0;
-            APP_CONFIG.dailyPrayers.asr.m = parseInt(document.getElementById('input-asr-m').value) || 0;
-            APP_CONFIG.dailyPrayers.maghrib.h = parseInt(document.getElementById('input-maghrib-h').value) || 0;
-            APP_CONFIG.dailyPrayers.maghrib.m = parseInt(document.getElementById('input-maghrib-m').value) || 0;
-            APP_CONFIG.dailyPrayers.isha.h = parseInt(document.getElementById('input-isha-h').value) || 0;
-            APP_CONFIG.dailyPrayers.isha.m = parseInt(document.getElementById('input-isha-m').value) || 0;
+            // Weekly Prayers (4 weeks)
+            const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+            APP_CONFIG.weeklyPrayers = [0, 1, 2, 3].map(wi => {
+                const week = {};
+                prayers.forEach(p => {
+                    week[p] = {
+                        h: parseInt(document.getElementById(`w${wi}-${p}-h`).value) || 0,
+                        m: parseInt(document.getElementById(`w${wi}-${p}-m`).value) || 0
+                    };
+                });
+                return week;
+            });
 
             db.collection("mosque_data").doc("settings").set({
                 jummah: APP_CONFIG.jummah,
                 theme: APP_CONFIG.theme,
                 layout: APP_CONFIG.layout,
                 prayerConfig: APP_CONFIG.prayerConfig,
-                dailyPrayers: APP_CONFIG.dailyPrayers
+                countdownMinutes: APP_CONFIG.countdownMinutes,
+                customColor: APP_CONFIG.customColor,
+                weeklyPrayers: APP_CONFIG.weeklyPrayers
             }, { merge: true })
                 .then(() => {
                     btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
-                    setTimeout(() => {
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    }, 2000);
+                    setTimeout(() => { btn.innerHTML = originalText; btn.disabled = false; }, 2000);
                 })
                 .catch((error) => {
                     alert("Error saving: " + error.message);
@@ -1054,6 +1280,30 @@
                 c.classList.remove('selected');
                 if (c.dataset.theme === theme) c.classList.add('selected');
             });
+            // Show/hide custom colour picker row
+            const row = document.getElementById('custom-color-row');
+            if (row) row.classList.toggle('visible', theme === 'custom');
+        }
+
+        // --- CUSTOM COLOUR HELPERS (admin) ---
+        function updateCustomPreviewBar(hex) {
+            const bar = document.getElementById('custom-preview-bar');
+            if (!bar) return;
+            const swatch = document.getElementById('custom-color-swatch');
+            if (swatch) swatch.style.background = hex;
+            // Create a light/dark approx for the gradient preview
+            const r = parseInt(hex.slice(1,3),16);
+            const g = parseInt(hex.slice(3,5),16);
+            const b = parseInt(hex.slice(5,7),16);
+            const light = '#' + [r+(255-r)*0.55, g+(255-g)*0.55, b+(255-b)*0.55].map(v=>Math.min(255,Math.round(v)).toString(16).padStart(2,'0')).join('');
+            const dark  = '#' + [r*0.62, g*0.62, b*0.62].map(v=>Math.min(255,Math.round(v)).toString(16).padStart(2,'0')).join('');
+            const bg    = '#' + [r*0.07+6, g*0.07+6, b*0.07+8].map(v=>Math.min(255,Math.round(v)).toString(16).padStart(2,'0')).join('');
+            bar.style.background = `linear-gradient(135deg, ${bg} 0%, #1a1a2e 30%, ${hex} 50%, ${light} 70%, ${dark} 100%)`;
+        }
+
+        function onCustomColorChange(hex) {
+            APP_CONFIG.customColor = hex;
+            updateCustomPreviewBar(hex);
         }
 
         function selectLayout(layout) {
@@ -1064,8 +1314,72 @@
             });
         }
 
+        // --- WEEK TAB SWITCHING ---
+        function switchWeekTab(idx) {
+            document.querySelectorAll('.week-content').forEach((el, i) => el.classList.toggle('active', i === idx));
+            document.querySelectorAll('.week-tab-btn').forEach((btn, i) => btn.classList.toggle('active', i === idx));
+        }
+
+        // --- PRAYER TIMETABLE LOADER ---
+        async function loadTimetable() {
+            const btn = document.getElementById('btn-load-timetable');
+            const container = document.getElementById('timetable-container');
+            const content = document.getElementById('timetable-content');
+            const city = document.getElementById('api-city').value.trim();
+            const country = document.getElementById('api-country').value.trim();
+            const method = document.getElementById('api-method').value;
+            const school = document.getElementById('api-school').value;
+
+            if (!city || !country) { alert('Please enter City and Country first.'); return; }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            content.innerHTML = '';
+            container.style.display = 'block';
+
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth() + 1;
+            const todayDate = today.getDate();
+
+            try {
+                const url = `https://api.aladhan.com/v1/calendarByCity/${year}/${month}?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=${method}&school=${school}`;
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (data.code !== 200 || !data.data) {
+                    content.innerHTML = '<p style="color:#ff6b6b; padding:10px 0;"><i class="fas fa-exclamation-triangle"></i> Failed to load. Check city/country settings.</p>';
+                    return;
+                }
+
+                const fmt = s => s.split(' ')[0];
+                let html = '<div class="timetable-wrap"><table class="timetable"><thead><tr>';
+                html += '<th>Date</th><th>Fajr</th><th>Sunrise</th><th>Dhuhr</th><th>Asr</th><th>Maghrib</th><th>Isha</th><th>Week</th>';
+                html += '</tr></thead><tbody>';
+
+                data.data.forEach(d => {
+                    const t = d.timings;
+                    const dayNum = parseInt(d.date.gregorian.day, 10);
+                    const weekIdx = dayNum <= 7 ? 1 : dayNum <= 14 ? 2 : dayNum <= 21 ? 3 : 4;
+                    const isToday = dayNum === todayDate;
+                    html += `<tr${isToday ? ' class="today-row"' : ''}>`;
+                    html += `<td>${d.date.readable}${isToday ? ' <strong>(Today)</strong>' : ''}</td>`;
+                    html += `<td>${fmt(t.Fajr)}</td><td>${fmt(t.Sunrise)}</td><td>${fmt(t.Dhuhr)}</td>`;
+                    html += `<td>${fmt(t.Asr)}</td><td>${fmt(t.Maghrib)}</td><td>${fmt(t.Isha)}</td>`;
+                    html += `<td><span class="week-badge">W${weekIdx}</span></td></tr>`;
+                });
+
+                html += '</tbody></table></div>';
+                content.innerHTML = html;
+            } catch (e) {
+                content.innerHTML = `<p style="color:#ff6b6b; padding:10px 0;">Error: ${e.message}</p>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sync"></i> Refresh';
+            }
+        }
+
     </script>
 </body>
 
 </html>
-
